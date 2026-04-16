@@ -25,6 +25,12 @@ export interface Student {
   budget: string;
   preferred_countries: string[];
   course_interest: string;
+  college_name: string;
+  grad_score: string;
+  backlogs: number;
+  work_experience: string;
+  visa_refusal: boolean;
+  has_passport: boolean;
   created_at: string;
   
   // Virtual field we will attach after the SQL JOIN
