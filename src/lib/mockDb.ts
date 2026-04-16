@@ -33,8 +33,7 @@ export interface Student {
   has_passport: boolean;
   created_at: string;
   
-  // Virtual field we will attach after the SQL JOIN
-  country_profiles?: StudentCountry[]; 
+  student_countries?: StudentCountry[]; 
 }
 
 // Ensure Backward compatibility if any stray imports exist 

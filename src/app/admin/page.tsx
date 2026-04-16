@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Download, Users, Flame, MapPin, Target, Clock, TrendingUp, BarChart3, Activity, ShieldCheck, ArrowRight, Timer, LayoutDashboard, Database, User } from "lucide-react";
+import { Download } from "lucide-react";
 import * as XLSX from "xlsx";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
     const total = students.length;
     const allProfiles = students.flatMap(s => (s as any).student_countries as StudentCountry[] || []);
     
-    const staffEfficiency = allProfiles.reduce((acc, curr) => {
+    const staffEfficiency = allProfiles.reduce((acc: Record<string, number>, curr) => {
       if (curr.status === 'Cold' && (curr as any).handled_by) {
         const c = counselors.find(can => can.id === (curr as any).handled_by);
         const name = c?.email?.split('@')[0] || "Staff";
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
       return profiles.some(p => p.status === "Hot" || p.is_highly_interested);
     }).length;
 
-    const countryStats = allProfiles.reduce((acc, curr) => {
+    const countryStats = allProfiles.reduce((acc: Record<string, number>, curr) => {
       acc[curr.country_name] = (acc[curr.country_name] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
@@ -100,14 +100,14 @@ export default function AdminDashboard() {
         Phone: s.phone,
         Qualification: s.qualification,
         Current_College: s.college_name || "N/A",
-        GPA_Score: (s as any).grad_score || "N/A",
-        Backlogs: (s as any).backlogs || 0,
-        Work_Experience: (s as any).work_experience || "None",
+        GPA_Score: s.grad_score || "N/A",
+        Backlogs: s.backlogs || 0,
+        Work_Experience: s.work_experience || "None",
         Course: s.course_interest,
         Intake: s.intake,
         Budget: s.budget,
-        Visa_Refusal: (s as any).visa_refusal ? "Yes" : "No",
-        Has_Passport: (s as any).has_passport ? "Yes" : "No",
+        Visa_Refusal: s.visa_refusal ? "Yes" : "No",
+        Has_Passport: s.has_passport ? "Yes" : "No",
         Registered_Date: new Date(s.created_at).toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata' }),
         Registered_Time: new Date(s.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Kolkata' })
       };
@@ -155,8 +155,8 @@ export default function AdminDashboard() {
         <section className="grid grid-cols-1 md:grid-cols-4 gap-12">
             <SimpleStat label="Total Registered" value={metrics.total} />
             <SimpleStat label="Hot Interest" value={metrics.hotCount} />
-            <SimpleStat label="Processing" value={students.filter(s => (s as any).student_countries?.length > 0).length} />
-            <SimpleStat label="Completed" value={students.filter(s => (s as any).student_countries?.every((p: any) => p.status === 'Cold')).length} />
+            <SimpleStat label="Processing" value={students.filter(s => s.student_countries && s.student_countries.length > 0).length} />
+            <SimpleStat label="Completed" value={students.filter(s => s.student_countries && s.student_countries.every((p: any) => p.status === 'Cold')).length} />
         </section>
 
         {/* Analytics Grid */}
@@ -278,14 +278,14 @@ export default function AdminDashboard() {
                     </td>
                     <td className="py-8 px-8">
                       <div className="flex flex-wrap gap-1">
-                        {((s as any).student_countries || []).map((p: any) => (
+                        {(s.student_countries || []).map((p: any) => (
                            <span key={p.id} className="text-[9px] font-bold border border-slate-100 px-1.5 py-0.5 rounded-full bg-white text-slate-400 uppercase tracking-wider">{p.country_name}</span>
                         ))}
                       </div>
                     </td>
                     <td className="py-8 px-8">
                        {(() => {
-                         const profiles = (s as any).student_countries || [];
+                         const profiles = s.student_countries || [];
                          const allDone = profiles.length > 0 && profiles.every((p: any) => p.status === 'Cold');
                          return (
                            <div className="flex items-center gap-1.5">
@@ -297,7 +297,7 @@ export default function AdminDashboard() {
                     </td>
                     <td className="py-8 px-8">
                        <div className="flex flex-col gap-1">
-                          {((s as any).student_countries || []).map((p: any) => {
+                          {(s.student_countries || []).map((p: any) => {
                              const c = counselors.find(can => can.id === p.handled_by);
                              return c ? (
                                <div key={p.id} className="flex items-center gap-2">
@@ -306,7 +306,7 @@ export default function AdminDashboard() {
                                </div>
                              ) : null;
                           })}
-                          {((s as any).student_countries || []).every((p: any) => !p.handled_by) && <span className="text-xs text-slate-300 italic">Unassigned</span>}
+                          {(s.student_countries || []).every((p: any) => !p.handled_by) && <span className="text-xs text-slate-300 italic">Unassigned</span>}
                        </div>
                     </td>
                     <td className="py-8 pl-8 text-right text-[10px] text-slate-400 font-bold uppercase tracking-tight whitespace-nowrap">

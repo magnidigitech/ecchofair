@@ -18,7 +18,7 @@ export default function CounselorDashboard() {
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"queue" | "completed">("queue");
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<{ is_online: boolean; id: string; role: string; assigned_countries: string[]; email: string } | null>(null);
   const [isPresenceLoading, setIsPresenceLoading] = useState(false);
   const supabase = createClient();
 
@@ -275,7 +275,15 @@ export default function CounselorDashboard() {
   );
 }
 
-function StudentDetailWorkspace({ lead, onUpdateStatus, onUpdateStudent }: { lead: any, onUpdateStatus: any, onUpdateStudent: any }) {
+function StudentDetailWorkspace({ 
+  lead, 
+  onUpdateStatus, 
+  onUpdateStudent 
+}: { 
+  lead: StudentCountry & { students: Student }, 
+  onUpdateStatus: (id: string, updates: Partial<StudentCountry>) => Promise<void>, 
+  onUpdateStudent: (id: string, updates: Partial<Student>) => Promise<void> 
+}) {
   const student = lead.students;
   const [isEditing, setIsEditing] = useState(false);
   const [localNotes, setLocalNotes] = useState(lead.notes || "");

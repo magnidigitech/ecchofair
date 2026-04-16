@@ -61,7 +61,7 @@ export default function StudentForm() {
 
     const isValid = await trigger(fieldsToValidate);
     if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+      setCurrentStep((prev: number) => Math.min(prev + 1, steps.length - 1));
     }
   };
 
@@ -392,7 +392,7 @@ export default function StudentForm() {
               {currentStep > 0 ? (
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(prev => prev - 1)}
+                  onClick={() => setCurrentStep((prev: number) => prev - 1)}
                   className="px-5 py-2.5 rounded-xl text-foreground font-medium flex items-center hover:bg-secondary transition-colors"
                 >
                   <ChevronLeft size={18} className="mr-1" /> Back
