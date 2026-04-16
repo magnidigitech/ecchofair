@@ -99,12 +99,12 @@ export default function CounselorDashboard() {
       ...(updates.status === 'Cold' ? { completed_at: new Date().toISOString() } : {})
     };
     
-    setStudents(prev => prev.map(item => item.id === countryId ? { ...item, ...finalUpdates } : item));
+    setStudents((prev: any[]) => prev.map(item => item.id === countryId ? { ...item, ...finalUpdates } : item));
     await supabase.from("student_countries").update(finalUpdates).eq("id", countryId);
   };
 
   const updateStudentDemographics = async (studentId: string, updates: Partial<Student>) => {
-    setStudents(prev => prev.map(item => item.student_id === studentId ? { ...item, students: { ...item.students, ...updates } } : item));
+    setStudents((prev: any[]) => prev.map(item => item.student_id === studentId ? { ...item, students: { ...item.students, ...updates } } : item));
     await supabase.from("students").update(updates).eq("id", studentId);
   };
 
@@ -361,7 +361,7 @@ function StudentDetailWorkspace({ lead, onUpdateStatus, onUpdateStudent }: { lea
     recognition.onresult = (event: any) => {
       const transcript = event.results[event.results.length - 1][0].transcript;
       if (transcript) {
-        setLocalNotes(prev => {
+        setLocalNotes((prev: string) => {
           const separator = prev.length > 0 ? (prev.endsWith('.') || prev.endsWith('\n') ? ' ' : '. ') : '';
           return prev + separator + transcript.trim();
         });
