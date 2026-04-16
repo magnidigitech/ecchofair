@@ -303,8 +303,8 @@ function StudentDetailWorkspace({
     grad_score: student.grad_score || "",
     backlogs: student.backlogs || 0,
     work_experience: student.work_experience || "",
-    visa_refusal: student.visa_refusal ? "Yes" : "No",
-    has_passport: student.has_passport ? "Yes" : "No",
+    visa_refusal: !!student.visa_refusal,
+    has_passport: !!student.has_passport,
     intake: student.intake,
     budget: student.budget
   });
@@ -317,7 +317,7 @@ function StudentDetailWorkspace({
       course_interest: student.course_interest, intake: student.intake, budget: student.budget,
       college_name: student.college_name || "", grad_score: student.grad_score || "",
       backlogs: student.backlogs || 0, work_experience: student.work_experience || "",
-      visa_refusal: student.visa_refusal ? "Yes" : "No", has_passport: student.has_passport ? "Yes" : "No"
+      visa_refusal: !!student.visa_refusal, has_passport: !!student.has_passport
     });
   }, [lead.id, student]);
 
@@ -325,9 +325,7 @@ function StudentDetailWorkspace({
     setIsSaving(true);
     const finalData = {
       ...editForm,
-      backlogs: parseInt(String(editForm.backlogs) || "0"),
-      visa_refusal: editForm.visa_refusal === "Yes",
-      has_passport: editForm.has_passport === "Yes"
+      backlogs: parseInt(String(editForm.backlogs) || "0")
     };
     await onUpdateStudent(student.id, finalData as any);
     setIsEditing(false);
@@ -562,7 +560,16 @@ function StudentDetailWorkspace({
              </div>
              <div>
                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">Backlogs</p>
-               {isEditing ? <input type="number" value={editForm.backlogs} onChange={(e) => setEditForm({...editForm, backlogs: e.target.value})} className="bg-slate-50 p-2 w-full rounded-lg border-slate-200" /> : <p className="font-medium text-slate-900">{student.backlogs ?? 0}</p>}
+               {isEditing ? (
+                 <input 
+                   type="number" 
+                   value={editForm.backlogs} 
+                   onChange={(e) => setEditForm({...editForm, backlogs: parseInt(e.target.value) || 0})} 
+                   className="bg-slate-50 p-2 w-full rounded-lg border-slate-200" 
+                 />
+               ) : (
+                 <p className="font-medium text-slate-900">{student.backlogs ?? 0}</p>
+               )}
              </div>
           </div>
           <div>
@@ -580,21 +587,55 @@ function StudentDetailWorkspace({
           <div className="grid grid-cols-2 gap-4">
              <div>
                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Visa Refusal</p>
-               <span className={cn(
-                 "text-[10px] font-black px-2 py-1 rounded uppercase tracking-tighter",
-                 student.visa_refusal ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100"
-               )}>
-                 {student.visa_refusal ? "YES - REVIEW" : "NONE"}
-               </span>
+               {isEditing ? (
+                 <div className="flex gap-1">
+                   {["Yes", "No"].map(v => (
+                     <button 
+                       key={v}
+                       onClick={() => setEditForm({...editForm, visa_refusal: v === "Yes"})}
+                       className={cn(
+                         "flex-1 py-1 px-2 rounded text-[10px] font-bold transition-all border",
+                         (editForm.visa_refusal ? "Yes" : "No") === v ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-400 border-slate-100"
+                       )}
+                     >
+                       {v}
+                     </button>
+                   ))}
+                 </div>
+               ) : (
+                 <span className={cn(
+                   "text-[10px] font-black px-2 py-1 rounded uppercase tracking-tighter",
+                   student.visa_refusal ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                 )}>
+                   {student.visa_refusal ? "YES - REVIEW" : "NONE"}
+                 </span>
+               )}
              </div>
              <div>
                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Passport</p>
-               <span className={cn(
-                 "text-[10px] font-black px-2 py-1 rounded uppercase tracking-tighter",
-                 student.has_passport ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-amber-50 text-amber-600 border border-amber-100"
-               )}>
-                 {student.has_passport ? "READY" : "NO PASSPORT"}
-               </span>
+               {isEditing ? (
+                 <div className="flex gap-1">
+                   {["Yes", "No"].map(v => (
+                     <button 
+                       key={v}
+                       onClick={() => setEditForm({...editForm, has_passport: v === "Yes"})}
+                       className={cn(
+                         "flex-1 py-1 px-2 rounded text-[10px] font-bold transition-all border",
+                         (editForm.has_passport ? "Yes" : "No") === v ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-400 border-slate-100"
+                       )}
+                     >
+                       {v}
+                     </button>
+                   ))}
+                 </div>
+               ) : (
+                 <span className={cn(
+                   "text-[10px] font-black px-2 py-1 rounded uppercase tracking-tighter",
+                   student.has_passport ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-amber-50 text-amber-600 border border-amber-100"
+                 )}>
+                   {student.has_passport ? "READY" : "NO PASSPORT"}
+                 </span>
+               )}
              </div>
           </div>
           <div>
