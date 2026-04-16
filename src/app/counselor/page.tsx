@@ -299,6 +299,12 @@ function StudentDetailWorkspace({
     qualification: student.qualification,
     ielts_gre: student.ielts_gre,
     course_interest: student.course_interest,
+    college_name: student.college_name || "",
+    grad_score: student.grad_score || "",
+    backlogs: student.backlogs || 0,
+    work_experience: student.work_experience || "",
+    visa_refusal: student.visa_refusal ? "Yes" : "No",
+    has_passport: student.has_passport ? "Yes" : "No",
     intake: student.intake,
     budget: student.budget
   });
@@ -308,13 +314,22 @@ function StudentDetailWorkspace({
     setEditForm({
       name: student.name, email: student.email, phone: student.phone,
       qualification: student.qualification, ielts_gre: student.ielts_gre,
-      course_interest: student.course_interest, intake: student.intake, budget: student.budget
+      course_interest: student.course_interest, intake: student.intake, budget: student.budget,
+      college_name: student.college_name || "", grad_score: student.grad_score || "",
+      backlogs: student.backlogs || 0, work_experience: student.work_experience || "",
+      visa_refusal: student.visa_refusal ? "Yes" : "No", has_passport: student.has_passport ? "Yes" : "No"
     });
   }, [lead.id, student]);
 
   const handleSaveAll = async () => {
     setIsSaving(true);
-    await onUpdateStudent(student.id, editForm);
+    const finalData = {
+      ...editForm,
+      backlogs: parseInt(String(editForm.backlogs) || "0"),
+      visa_refusal: editForm.visa_refusal === "Yes",
+      has_passport: editForm.has_passport === "Yes"
+    };
+    await onUpdateStudent(student.id, finalData as any);
     setIsEditing(false);
     setIsSaving(false);
   };
