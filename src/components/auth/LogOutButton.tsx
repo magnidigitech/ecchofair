@@ -17,10 +17,10 @@ export default function LogOutButton() {
   return (
     <button 
       onClick={handleSignOut}
-      className="text-muted-foreground cursor-pointer hover:text-destructive transition-colors p-1"
-      title="Sign Out"
+      className="text-slate-400 hover:text-rose-500 transition-all p-2 rounded-xl hover:bg-rose-50 group"
+      title="De-authenticate Session"
     >
-      <LogOut size={16} />
+      <LogOut size={18} strokeWidth={2.5} className="group-hover:scale-110 transition-transform" />
     </button>
   );
 }

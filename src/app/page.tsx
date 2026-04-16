@@ -5,9 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { ChevronRight, ChevronLeft, Check, Sparkles } from "lucide-react";
+import { ChevronRight, ChevronLeft, Check, Sparkles, X, Globe } from "lucide-react";
 import { submitStudentForm } from "./actions";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/Logo";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -30,20 +31,26 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const steps = [
-  { id: "personal", title: "Personal Details" },
-  { id: "academic", title: "Academic Profile" },
-  { id: "preferences", title: "Study Preferences" },
+  { id: "personal", title: "About Me" },
+  { id: "academic", title: "My Studies" },
+  { id: "preferences", title: "My Plans" },
 ];
 
 const QUALIFICATIONS = ["High School / 12th", "Diploma", "Bachelors", "Masters", "Ph.D"];
 const INTAKES = ["Fall 2026", "Spring 2027", "Fall 2027"];
 const BUDGETS = ["Under $20k", "$20k - $40k", "$40k - $60k", "Above $60k"];
 const COUNTRIES = ["USA", "UK", "Australia", "Canada", "Ireland", "New Zealand", "Europe"];
+const EUROPE_COUNTRIES = [
+  "Austria", "Cyprus", "Denmark", "Dubai", "Finland", "France", "Germany", "Greece", 
+  "Hungary", "Italy", "Latvia", "Lithuania", "Malaysia", "Malta", "Mauritius", 
+  "Netherland", "Poland", "Singapore", "Spain", "Sweden", "Switzerland"
+];
 
 export default function StudentForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successId, setSuccessId] = useState<string | null>(null);
+  const [isEuropeModalOpen, setIsEuropeModalOpen] = useState(false);
 
   const { control, register, handleSubmit, trigger, formState: { errors }, watch } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -57,7 +64,7 @@ export default function StudentForm() {
   const validateStep = async () => {
     let fieldsToValidate: (keyof FormData)[] = [];
     if (currentStep === 0) fieldsToValidate = ["name", "phone", "email"];
-    if (currentStep === 1) fieldsToValidate = ["qualification", "course_interest"];
+    if (currentStep === 1) fieldsToValidate = ["qualification", "course_interest", "college_name"];
     if (currentStep === 2) fieldsToValidate = ["intake", "budget", "preferred_countries"];
 
     const isValid = await trigger(fieldsToValidate);
@@ -83,27 +90,28 @@ export default function StudentForm() {
 
   if (successId) {
     return (
-      <div className="min-h-screen bg-secondary/30 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#FBFBFD] flex flex-col items-center justify-center p-6 sm:p-12">
+        <Logo className="mb-12 scale-110" />
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-background max-w-md w-full rounded-2xl shadow-xl p-8 text-center border border-border"
+          className="bg-white max-w-md w-full rounded-[40px] shadow-2xl shadow-slate-200/50 p-6 sm:p-10 text-center border border-slate-100"
         >
-          <div className="mx-auto w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
-            <Check size={32} />
+          <div className="mx-auto w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mb-8 shadow-inner">
+            <Check size={40} strokeWidth={3} />
           </div>
-          <h2 className="text-2xl font-bold mb-2">Registration Complete!</h2>
-          <p className="text-muted-foreground mb-6">Present this ID at counseling desks</p>
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-3 tracking-tight">Passport Secured!</h2>
+          <p className="text-slate-500 font-medium mb-8 sm:mb-10 leading-relaxed text-sm sm:text-base">Your registration is successful. Present this ID at the desk.</p>
           
-          <div className="bg-primary/5 border border-primary/20 rounded-xl p-6 mb-8 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
-            <p className="text-sm font-medium text-primary mb-1">Your Unique ID</p>
-            <p className="text-3xl font-black tracking-wider text-foreground">{successId}</p>
+          <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 sm:p-8 mb-8 sm:mb-10 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Your Journey ID</p>
+            <p className="text-4xl font-black tracking-tighter text-primary">{successId}</p>
           </div>
 
           <button 
             onClick={() => window.location.reload()}
-            className="w-full bg-secondary text-secondary-foreground font-medium py-3 rounded-xl hover:bg-secondary/80 transition-colors"
+            className="w-full bg-slate-900 text-white font-bold py-5 rounded-2xl hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
           >
             Register Another Student
           </button>
@@ -113,49 +121,51 @@ export default function StudentForm() {
   }
 
   return (
-    <div className="min-h-screen bg-secondary/30 py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+    <div className="min-h-screen bg-[#FBFBFD] pt-8 sm:pt-12 pb-24 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
       <div className="w-full max-w-xl">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-4xl">
-            Eccho Overseas Form
+        <div className="flex flex-col items-center mb-10 sm:mb-16">
+          <Logo className="mb-6 sm:mb-8" />
+          <div className="h-0.5 w-12 bg-slate-200 rounded-full mb-6 sm:mb-8" />
+          <h1 className="text-4xl font-black tracking-tight text-slate-900 text-center sm:text-5xl">
+            Education Fair
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Fast-track your counseling session
+          <p className="mt-3 text-slate-400 font-medium text-center uppercase tracking-widest text-xs">
+            Student Registration Portal
           </p>
         </div>
 
         {/* Progress Bar */}
-        <div className="mb-8">
+        <div className="mb-12 px-8">
           <div className="flex justify-between relative">
-            <div className="absolute top-1/2 left-0 w-full h-1 bg-border -z-10 -translate-y-1/2 rounded-full"></div>
+            <div className="absolute top-1/2 left-0 w-full h-[1px] bg-slate-100 -z-10 -translate-y-1/2 rounded-full"></div>
             <motion.div 
-              className="absolute top-1/2 left-0 h-1 bg-primary -z-10 -translate-y-1/2 rounded-full"
+              className="absolute top-1/2 left-0 h-[2px] bg-primary -z-10 -translate-y-1/2 rounded-full"
               initial={{ width: "0%" }}
               animate={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.5, ease: "circOut" }}
             />
             {steps.map((step, idx) => (
               <div key={step.id} className="flex flex-col items-center">
                 <div 
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 bg-background transition-colors
-                    ${currentStep >= idx ? "border-primary text-primary" : "border-border text-muted-foreground"}`}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border transition-all duration-500
+                    ${currentStep >= idx ? "bg-white border-primary text-primary shadow-lg shadow-primary/10" : "bg-white border-slate-100 text-slate-300"}`}
                 >
-                  {currentStep > idx ? <Check size={16} /> : idx + 1}
+                  {currentStep > idx ? <Check size={20} strokeWidth={3} /> : idx + 1}
                 </div>
+                <span className={cn(
+                  "absolute mt-12 text-[10px] font-bold uppercase tracking-widest transition-all duration-500 whitespace-nowrap",
+                  currentStep >= idx ? "text-primary opacity-100" : "text-slate-300 opacity-0"
+                )}>
+                  {step.title}
+                </span>
               </div>
-            ))}
-          </div>
-          <div className="flex justify-between mt-2 px-1">
-            {steps.map((step, idx) => (
-              <span key={step.id} className={`text-xs font-medium ${currentStep >= idx ? "text-primary" : "text-muted-foreground"}`}>
-                {step.title}
-              </span>
             ))}
           </div>
         </div>
 
         {/* Form Container */}
-        <div className="bg-background rounded-2xl shadow-xl shadow-black/5 border border-border p-6 sm:p-8 overflow-hidden relative">
+        <div className="bg-white rounded-[40px] shadow-2xl shadow-slate-200/50 border border-slate-50 p-5 sm:p-12 overflow-hidden relative group">
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary/50 via-primary to-primary/50 opacity-10" />
           <form onSubmit={handleSubmit(onSubmit)}>
             <AnimatePresence mode="wait">
               <motion.div
@@ -166,104 +176,107 @@ export default function StudentForm() {
                 transition={{ duration: 0.2 }}
               >
                 {currentStep === 0 && (
-                  <div className="space-y-5">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Full Name</label>
+                  <div className="space-y-4 sm:space-y-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                       <input 
                         {...register("name")}
-                        className="w-full !bg-background border-border border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                        placeholder="e.g. Rahul Sharma"
+                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
+                        placeholder="Rahul Sharma"
                       />
-                      {errors.name && <p className="text-destructive text-xs mt-1">{errors.name.message}</p>}
+                      {errors.name && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.name.message}</p>}
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Phone Number</label>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
                       <input 
                         {...register("phone")}
                         type="tel"
-                        className="w-full !bg-background border-border border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                        placeholder="e.g. 9876543210"
+                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
+                        placeholder="9876543210"
                       />
-                      {errors.phone && <p className="text-destructive text-xs mt-1">{errors.phone.message}</p>}
+                      {errors.phone && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.phone.message}</p>}
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Email Address</label>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
                       <input 
                         {...register("email")}
                         type="email"
-                        className="w-full !bg-background border-border border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                        placeholder="e.g. yourname@gmail.com"
+                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
+                        placeholder="rahul@example.com"
                       />
-                      {errors.email && <p className="text-destructive text-xs mt-1">{errors.email.message}</p>}
+                      {errors.email && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.email.message}</p>}
                     </div>
                   </div>
                 )}
 
                 {currentStep === 1 && (
-                  <div className="space-y-5">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Highest Qualification</label>
-                      <select 
-                        {...register("qualification")}
-                        className="w-full !bg-background border-border border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all appearance-none"
-                      >
-                        <option value="">Select qualification</option>
-                        {QUALIFICATIONS.map(q => <option key={q} value={q}>{q}</option>)}
-                      </select>
-                      {errors.qualification && <p className="text-destructive text-xs mt-1">{errors.qualification.message}</p>}
+                  <div className="space-y-4 sm:space-y-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">What did you study last?</label>
+                      <div className="relative">
+                        <select 
+                          {...register("qualification")}
+                          className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium appearance-none"
+                        >
+                          <option value="">Select qualification</option>
+                          {QUALIFICATIONS.map(q => <option key={q} value={q}>{q}</option>)}
+                        </select>
+                        <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 rotate-90 text-slate-400 pointer-events-none" size={18} />
+                      </div>
+                      {errors.qualification && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.qualification.message}</p>}
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Current College / University</label>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">College / School Name</label>
                       <input 
                         {...register("college_name")}
-                        className="w-full !bg-background border-border border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                        placeholder="Your College"
+                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
+                        placeholder="Your University"
                       />
-                      {errors.college_name && <p className="text-destructive text-xs mt-1">{errors.college_name.message}</p>}
+                      {errors.college_name && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.college_name.message}</p>}
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-1">GPA / Percentage</label>
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">GPA / Percentage</label>
                         <input 
                           {...register("grad_score")}
-                          className="w-full !bg-background border-border border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                          placeholder="e.g. 8.5 CGPA"
+                          className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
+                          placeholder="8.5 CGPA"
                         />
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">Backlogs</label>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Backlogs</label>
                         <input 
                           {...register("backlogs")}
                           type="number"
-                          className="w-full !bg-background border-border border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                          className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
                           placeholder="0"
                         />
                       </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Course Interest</label>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">What do you want to study?</label>
                       <input 
                         {...register("course_interest")}
-                        className="w-full !bg-background border-border border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                        placeholder="e.g. Masters in Data Science"
+                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
+                        placeholder="e.g. MS in Data Science"
                       />
-                      {errors.course_interest && <p className="text-destructive text-xs mt-1">{errors.course_interest.message}</p>}
+                      {errors.course_interest && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.course_interest.message}</p>}
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-1">Work Exp (Years)</label>
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Work Exp</label>
                         <input 
                           {...register("work_experience")}
-                          className="w-full !bg-background border-border border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                          placeholder="e.g. 2 Years"
+                          className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
+                          placeholder="2 Years"
                         />
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">IELTS / GRE</label>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">IELTS / GRE</label>
                         <input 
                           {...register("ielts_gre")}
-                          className="w-full !bg-background border-border border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                          placeholder="e.g. 7.5"
+                          className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
+                          placeholder="7.5"
                         />
                       </div>
                     </div>
@@ -271,9 +284,9 @@ export default function StudentForm() {
                 )}
 
                 {currentStep === 2 && (
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Preferred Countries</label>
+                  <div className="space-y-6 sm:space-y-8">
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Countries you like</label>
                       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                         <Controller
                           name="preferred_countries"
@@ -281,24 +294,36 @@ export default function StudentForm() {
                           render={({ field }) => (
                             <>
                               {COUNTRIES.map(country => {
-                                const isSelected = field.value.includes(country);
+                                const isEurope = country === "Europe";
+                                const selectedEUCount = field.value.filter((v: string) => EUROPE_COUNTRIES.includes(v)).length;
+                                const isSelected = isEurope ? selectedEUCount > 0 : field.value.includes(country);
+                                
                                 return (
                                   <div 
                                     key={country}
                                     onClick={() => {
+                                      if (isEurope) {
+                                        setIsEuropeModalOpen(true);
+                                        return;
+                                      }
                                       const newValue = isSelected 
-                                        ? field.value.filter(v => v !== country)
+                                        ? field.value.filter((v: string) => v !== country)
                                         : [...field.value, country];
                                       field.onChange(newValue);
                                     }}
-                                    className={`
-                                      cursor-pointer px-4 py-3 rounded-xl border text-sm font-medium text-center transition-all flex items-center justify-center select-none
-                                      ${isSelected 
-                                        ? "bg-primary/10 border-primary text-primary" 
-                                        : "bg-background border-border hover:border-primary/50"}
-                                    `}
+                                    className={cn(
+                                      "cursor-pointer px-3 py-3 sm:py-4 rounded-2xl border text-[11px] font-bold uppercase tracking-tight text-center transition-all flex items-center justify-center select-none shadow-sm gap-2",
+                                      isSelected 
+                                        ? "bg-slate-900 border-slate-900 text-white shadow-lg shadow-slate-200" 
+                                        : "bg-slate-50 border-slate-100 text-slate-400 hover:border-slate-300"
+                                    )}
                                   >
                                     {country}
+                                    {isEurope && selectedEUCount > 0 && (
+                                      <span className="bg-primary text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+                                        {selectedEUCount}
+                                      </span>
+                                    )}
                                   </div>
                                 );
                               })}
@@ -306,12 +331,12 @@ export default function StudentForm() {
                           )}
                         />
                       </div>
-                      {errors.preferred_countries && <p className="text-destructive text-xs mt-1">{errors.preferred_countries.message}</p>}
+                      {errors.preferred_countries && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.preferred_countries.message}</p>}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-50">
-                      <div>
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Visa Refusal?</label>
+                    <div className="grid grid-cols-2 gap-6 pt-4 border-t border-slate-50">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Any visa issues before?</label>
                         <Controller
                           name="visa_refusal"
                           control={control}
@@ -323,8 +348,8 @@ export default function StudentForm() {
                                   type="button"
                                   onClick={() => field.onChange(val)}
                                   className={cn(
-                                    "flex-1 py-3 rounded-xl border text-sm font-medium transition-all",
-                                    field.value === val ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-500 border-slate-100 hover:border-slate-300"
+                                    "flex-1 py-4 rounded-2xl border text-xs font-bold transition-all",
+                                    field.value === val ? "bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-200" : "bg-slate-50 text-slate-400 border-slate-100 hover:border-slate-300"
                                   )}
                                 >
                                   {val}
@@ -334,8 +359,8 @@ export default function StudentForm() {
                           )}
                         />
                       </div>
-                      <div>
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Have Passport?</label>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Do you have a passport?</label>
                         <Controller
                           name="has_passport"
                           control={control}
@@ -347,8 +372,8 @@ export default function StudentForm() {
                                   type="button"
                                   onClick={() => field.onChange(val)}
                                   className={cn(
-                                    "flex-1 py-3 rounded-xl border text-sm font-medium transition-all",
-                                    field.value === val ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-500 border-slate-100 hover:border-slate-300"
+                                    "flex-1 py-4 rounded-2xl border text-xs font-bold transition-all",
+                                    field.value === val ? "bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-200" : "bg-slate-50 text-slate-400 border-slate-100 hover:border-slate-300"
                                   )}
                                 >
                                   {val}
@@ -360,28 +385,34 @@ export default function StudentForm() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4 border-t border-slate-50">
-                      <div>
-                        <label className="block text-sm font-medium mb-1">Target Intake</label>
-                        <select 
-                          {...register("intake")}
-                          className="w-full !bg-background border-border border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all appearance-none"
-                        >
-                          <option value="">Select intake</option>
-                          {INTAKES.map(i => <option key={i} value={i}>{i}</option>)}
-                        </select>
-                        {errors.intake && <p className="text-destructive text-xs mt-1">{errors.intake.message}</p>}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-4 border-t border-slate-50">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">When do you want to join?</label>
+                        <div className="relative">
+                          <select 
+                            {...register("intake")}
+                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium appearance-none"
+                          >
+                            <option value="">Select intake</option>
+                            {INTAKES.map(i => <option key={i} value={i}>{i}</option>)}
+                          </select>
+                          <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 rotate-90 text-slate-400 pointer-events-none" size={18} />
+                        </div>
+                        {errors.intake && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.intake.message}</p>}
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">Budget</label>
-                        <select 
-                          {...register("budget")}
-                          className="w-full !bg-background border-border border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all appearance-none"
-                        >
-                          <option value="">Select budget</option>
-                          {BUDGETS.map(b => <option key={b} value={b}>{b}</option>)}
-                        </select>
-                        {errors.budget && <p className="text-destructive text-xs mt-1">{errors.budget.message}</p>}
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">How much can you spend?</label>
+                        <div className="relative">
+                          <select 
+                            {...register("budget")}
+                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium appearance-none"
+                          >
+                            <option value="">Select budget</option>
+                            {BUDGETS.map(b => <option key={b} value={b}>{b}</option>)}
+                          </select>
+                          <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 rotate-90 text-slate-400 pointer-events-none" size={18} />
+                        </div>
+                        {errors.budget && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.budget.message}</p>}
                       </div>
                     </div>
                   </div>
@@ -389,42 +420,118 @@ export default function StudentForm() {
               </motion.div>
             </AnimatePresence>
 
-            <div className="mt-8 pt-6 border-t border-border flex justify-between items-center">
+            <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-slate-50 flex flex-col-reverse sm:flex-row justify-between items-center gap-3 sm:gap-4">
               {currentStep > 0 ? (
                 <button
                   type="button"
                   onClick={() => setCurrentStep((prev: number) => prev - 1)}
-                  className="px-5 py-2.5 rounded-xl text-foreground font-medium flex items-center hover:bg-secondary transition-colors"
+                  className="w-full sm:flex-1 px-6 py-3.5 sm:py-4 rounded-2xl text-slate-500 font-bold text-sm flex items-center justify-center hover:bg-slate-50 transition-colors uppercase tracking-widest"
                 >
-                  <ChevronLeft size={18} className="mr-1" /> Back
+                  <ChevronLeft size={18} className="mr-2" /> Back
                 </button>
-              ) : <div></div>}
+              ) : <div className="hidden sm:block sm:flex-1"></div>}
 
               {currentStep < steps.length - 1 ? (
                 <button
                   type="button"
                   onClick={validateStep}
-                  className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all hover:-translate-y-0.5"
+                  className="w-full sm:flex-1 px-8 py-4 rounded-2xl bg-primary text-white font-bold text-sm flex items-center justify-center shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5 uppercase tracking-widest"
                 >
-                  Next Step <ChevronRight size={18} className="ml-1" />
+                  Continue <ChevronRight size={18} className="ml-2" />
                 </button>
               ) : (
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 rounded-xl bg-foreground text-background font-semibold flex items-center shadow-lg transition-all hover:bg-foreground/90 disabled:opacity-70 disabled:cursor-not-allowed hover:-translate-y-0.5"
+                  className="w-full sm:flex-1 px-8 py-4 rounded-2xl bg-slate-900 text-white font-bold text-sm flex items-center justify-center shadow-xl shadow-slate-200 transition-all hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 uppercase tracking-wide sm:tracking-widest"
                 >
                   {isSubmitting ? (
                     <span className="flex items-center">Processing...</span>
                   ) : (
-                    <span className="flex items-center"><Sparkles size={16} className="mr-2" /> Finish & Generate ID</span>
+                    <span className="flex items-center"><Sparkles size={16} className="mr-2 text-primary" /> Finish Registration</span>
                   )}
                 </button>
               )}
             </div>
           </form>
         </div>
-      </div>
+        {/* Europe Selection Modal */}
+      <AnimatePresence>
+        {isEuropeModalOpen && (
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xl z-[100] flex items-center justify-center p-6">
+            <Controller
+              name="preferred_countries"
+              control={control}
+              render={({ field }) => (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                  className="bg-white/90 backdrop-blur-3xl p-6 sm:p-10 rounded-[32px] sm:rounded-[48px] shadow-[0_32px_128px_rgba(0,0,0,0.1)] max-w-2xl w-full border border-white/20 relative overflow-hidden"
+                >
+                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary via-blue-400 to-indigo-500" />
+                  
+                  <div className="flex justify-between items-center mb-6 sm:mb-10">
+                    <div>
+                      <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tighter flex items-center gap-3">
+                        <Globe className="text-primary" size={24} /> Global Destinations
+                      </h3>
+                      <p className="text-slate-400 font-bold text-[10px] mt-2 uppercase tracking-[0.2em]">Select your preferred destinations</p>
+                    </div>
+                    <button onClick={() => setIsEuropeModalOpen(false)} className="bg-slate-50 p-3 rounded-2xl text-slate-400 hover:text-slate-900 transition-colors shadow-inner">
+                      <X size={20} strokeWidth={3} />
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto px-1 custom-scrollbar pb-6">
+                    {EUROPE_COUNTRIES.map(c => {
+                      const isSelected = field.value.includes(c);
+                      return (
+                        <div 
+                          key={c}
+                          onClick={() => {
+                            const newValue = isSelected 
+                              ? field.value.filter((v: string) => v !== c)
+                              : [...field.value, c];
+                            field.onChange(newValue);
+                          }}
+                          className={cn(
+                            "cursor-pointer px-4 py-3.5 rounded-2xl border text-[10px] font-black uppercase tracking-tight text-center transition-all flex items-center justify-center select-none shadow-sm",
+                            isSelected 
+                              ? "bg-slate-900 border-slate-900 text-white shadow-lg" 
+                              : "bg-white border-slate-100 text-slate-400 hover:border-slate-300"
+                          )}
+                        >
+                          {c}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="mt-10 pt-8 border-t border-slate-100 flex justify-between items-center">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-relaxed">
+                      {field.value.filter((v: string) => EUROPE_COUNTRIES.includes(v)).length} Selections Active
+                    </p>
+                    <button 
+                      onClick={() => setIsEuropeModalOpen(false)}
+                      className="px-8 py-4 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-2xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95"
+                    >
+                      Confirm Choices
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            />
+          </div>
+        )}
+      </AnimatePresence>
+
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #f1f5f9; border-radius: 10px; }
+      `}</style>
+    </div>
     </div>
   );
 }

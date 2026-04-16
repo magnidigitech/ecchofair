@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { Mail, Lock, AlertCircle, Loader2, LogIn } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { LogIn, Mail, Lock, AlertCircle, Loader2 } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -44,49 +45,50 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-secondary/30 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#FBFBFD] flex items-center justify-center p-6 selection:bg-blue-100">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="max-w-md w-full"
       >
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-black tracking-tight text-primary">Eccho Leads</h1>
-          <p className="text-muted-foreground mt-2">Study Abroad Education Fair Portal</p>
+        <div className="flex justify-center mb-12">
+          <Logo className="scale-110" />
         </div>
 
-        <div className="bg-background rounded-2xl shadow-xl border border-border p-8">
-          <div className="mb-6">
-            <h2 className="text-xl font-bold">Welcome Back</h2>
-            <p className="text-sm text-muted-foreground">Sign in to your dashboard</p>
+        <div className="bg-white rounded-[48px] shadow-[0_32px_128px_rgba(0,0,0,0.06)] border border-slate-50 p-12 relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary via-blue-400 to-indigo-500 no-print" />
+          
+          <div className="mb-10 text-center">
+            <h2 className="text-3xl font-black text-slate-900 tracking-tighter">Staff Login</h2>
+            <p className="text-slate-400 font-bold text-[10px] mt-2 uppercase tracking-[0.2em]">Authorized users only</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-1.5">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+              <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-3 text-slate-400 px-1">Email Address</label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-slate-900 transition-colors" size={16} strokeWidth={3} />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-secondary rounded-xl text-sm border-transparent focus:bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all outline-none"
-                  placeholder="name@example.com"
+                  className="w-full pl-12 pr-6 py-4 bg-slate-50 rounded-2xl text-xs font-bold border-transparent focus:bg-white focus:ring-4 focus:ring-slate-100 transition-all outline-none uppercase tracking-widest placeholder:text-slate-200 shadow-inner"
+                  placeholder="ID@ECOFAIR.NET"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1.5">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+              <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-3 text-slate-400 px-1">Password</label>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-slate-900 transition-colors" size={16} strokeWidth={3} />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-secondary rounded-xl text-sm border-transparent focus:bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                  className="w-full pl-12 pr-6 py-4 bg-slate-50 rounded-2xl text-xs font-bold border-transparent focus:bg-white focus:ring-4 focus:ring-slate-100 transition-all outline-none tracking-widest placeholder:text-slate-200 shadow-inner"
                   placeholder="••••••••"
                 />
               </div>
@@ -96,9 +98,9 @@ export default function LoginPage() {
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm flex items-center gap-2"
+                className="p-4 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-3"
               >
-                <AlertCircle size={16} />
+                <AlertCircle size={14} strokeWidth={3} />
                 {error}
               </motion.div>
             )}
@@ -106,19 +108,20 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all flex items-center justify-center disabled:opacity-70"
+              className="w-full bg-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] py-5 rounded-2xl shadow-2xl shadow-slate-200 hover:bg-slate-800 transition-all flex items-center justify-center disabled:opacity-70 active:scale-95"
             >
               {loading ? (
-                <Loader2 className="animate-spin mr-2" size={18} />
+                <Loader2 className="animate-spin mr-3" size={18} strokeWidth={3} />
               ) : (
-                <><LogIn size={18} className="mr-2" /> Sign In</>
+                <><LogIn size={18} className="mr-3" strokeWidth={3} /> Login Now</>
               )}
             </button>
           </form>
           
-          <div className="mt-8 pt-6 border-t border-border text-center">
-             <p className="text-xs text-muted-foreground">
-               Forgot your password? Please contact the administrator.
+          <div className="mt-12 pt-8 border-t border-slate-50 text-center">
+             <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest leading-relaxed">
+               Secure login enabled • Magni Digitech V3.0<br/>
+               Need help? Contact support.
              </p>
           </div>
         </div>
@@ -126,3 +129,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

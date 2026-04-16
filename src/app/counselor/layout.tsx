@@ -4,6 +4,8 @@ import { LogOut, User, Globe } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import LogOutButton from "@/components/auth/LogOutButton";
 import { redirect } from "next/navigation";
+import { Logo } from "@/components/Logo";
+import { cn } from "@/lib/utils";
 
 export const metadata = {
   title: "Counselor Dashboard",
@@ -31,22 +33,38 @@ export default async function CounselorLayout({ children }: { children: ReactNod
       <header className="h-16 bg-background border-b border-border flex items-center px-6 justify-between sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-8">
           <Link href="/counselor" className="flex items-center gap-2">
-            <h2 className="text-xl font-black tracking-tight text-primary">Eccho Leads</h2>
+            <Logo className="scale-[0.85] origin-left" noLink />
           </Link>
           
-          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-secondary rounded-full border border-border">
-            <Globe size={14} className="text-muted-foreground" />
-            <span className="text-xs font-medium text-muted-foreground uppercase">
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-secondary/50 rounded-full border border-slate-100">
+            <Globe size={14} className="text-slate-400" />
+            <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
               {assignedCountries.length > 0 
                 ? assignedCountries.join(" • ") 
-                : "No Countries Assigned"}
+                : "Global Access"}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          <div className="flex items-center text-xs font-medium bg-green-50 text-green-700 px-3 py-1.5 rounded-full border border-green-200">
-            <span className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse" /> Live Sync
+        <div className="flex items-center gap-4 sm:gap-6">
+          {/* Status Dot */}
+          <div className="flex items-center gap-2.5 px-4 py-2 bg-slate-50 border border-slate-100/50 rounded-2xl shadow-inner">
+             <div className="relative flex h-2 w-2">
+                <span className={cn(
+                  "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+                  profile?.is_online ? "bg-emerald-400" : "bg-rose-400"
+                )}></span>
+                <span className={cn(
+                  "relative inline-flex rounded-full h-2 w-2",
+                  profile?.is_online ? "bg-emerald-500" : "bg-rose-500"
+                )}></span>
+             </div>
+             <span className={cn(
+               "text-[10px] font-black uppercase tracking-[0.2em]",
+               profile?.is_online ? "text-emerald-600" : "text-rose-600"
+             )}>
+                Live Sync
+             </span>
           </div>
 
           <div className="h-8 w-px bg-border mx-2" />
