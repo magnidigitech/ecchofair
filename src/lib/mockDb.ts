@@ -10,6 +10,8 @@ export interface StudentCountry {
   status: Status;
   is_highly_interested: boolean;
   notes: string;
+  handled_by?: string;
+  completed_at?: string;
   updated_at: string;
 }
 
