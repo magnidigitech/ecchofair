@@ -56,32 +56,6 @@
   --radius: 0.75rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #09090b;
-    --foreground: #fafafa;
-
-    --primary: #3b82f6;
-    --primary-foreground: #ffffff;
-
-    --secondary: #27272a;
-    --secondary-foreground: #fafafa;
-
-    --muted: #27272a;
-    --muted-foreground: #a1a1aa;
-
-    --accent: #27272a;
-    --accent-foreground: #fafafa;
-
-    --destructive: #7f1d1d;
-    --destructive-foreground: #fafafa;
-
-    --border: #27272a;
-    --input: #27272a;
-    --ring: #3b82f6;
-  }
-}
-
 * {
   border-color: var(--border);
 }

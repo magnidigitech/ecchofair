@@ -38,11 +38,11 @@ const steps = [
 
 const QUALIFICATIONS = ["High School / 12th", "Diploma", "Bachelors", "Masters", "Ph.D"];
 const INTAKES = ["Fall 2026", "Spring 2027", "Fall 2027"];
-const BUDGETS = ["Under $20k", "$20k - $40k", "$40k - $60k", "Above $60k"];
+const BUDGETS = ["10 to 15 Lakhs", "15 to 20 Lakhs", "20 to 25 Lakhs", "Above 25 Lakhs"];
 const COUNTRIES = ["USA", "UK", "Australia", "Canada", "Ireland", "New Zealand", "Europe"];
 const EUROPE_COUNTRIES = [
-  "Austria", "Cyprus", "Denmark", "Dubai", "Finland", "France", "Germany", "Greece", 
-  "Hungary", "Italy", "Latvia", "Lithuania", "Malaysia", "Malta", "Mauritius", 
+  "Austria", "Cyprus", "Denmark", "Dubai", "Finland", "France", "Germany", "Greece",
+  "Hungary", "Italy", "Latvia", "Lithuania", "Malaysia", "Malta", "Mauritius",
   "Netherland", "Poland", "Singapore", "Spain", "Sweden", "Switzerland"
 ];
 
@@ -75,16 +75,16 @@ export default function StudentForm() {
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
-    
+
     // Server action call
     const result = await submitStudentForm(data);
-    
+
     if (result.success && result.generated_id) {
       setSuccessId(result.generated_id);
     } else {
       alert("Error submitting form: " + result.error);
     }
-    
+
     setIsSubmitting(false);
   };
 
@@ -92,7 +92,7 @@ export default function StudentForm() {
     return (
       <div className="min-h-screen bg-[#FBFBFD] flex flex-col items-center justify-center p-6 sm:p-12">
         <Logo className="mb-12 scale-110" />
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className="bg-white max-w-md w-full rounded-[40px] shadow-2xl shadow-slate-200/50 p-6 sm:p-10 text-center border border-slate-100"
@@ -102,14 +102,14 @@ export default function StudentForm() {
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-3 tracking-tight">Passport Secured!</h2>
           <p className="text-slate-500 font-medium mb-8 sm:mb-10 leading-relaxed text-sm sm:text-base">Your registration is successful. Present this ID at the desk.</p>
-          
+
           <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 sm:p-8 mb-8 sm:mb-10 relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Your Journey ID</p>
             <p className="text-4xl font-black tracking-tighter text-primary">{successId}</p>
           </div>
 
-          <button 
+          <button
             onClick={() => window.location.reload()}
             className="w-full bg-slate-900 text-white font-bold py-5 rounded-2xl hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
           >
@@ -138,7 +138,7 @@ export default function StudentForm() {
         <div className="mb-12 px-8">
           <div className="flex justify-between relative">
             <div className="absolute top-1/2 left-0 w-full h-[1px] bg-slate-100 -z-10 -translate-y-1/2 rounded-full"></div>
-            <motion.div 
+            <motion.div
               className="absolute top-1/2 left-0 h-[2px] bg-primary -z-10 -translate-y-1/2 rounded-full"
               initial={{ width: "0%" }}
               animate={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
@@ -146,7 +146,7 @@ export default function StudentForm() {
             />
             {steps.map((step, idx) => (
               <div key={step.id} className="flex flex-col items-center">
-                <div 
+                <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border transition-all duration-500
                     ${currentStep >= idx ? "bg-white border-primary text-primary shadow-lg shadow-primary/10" : "bg-white border-slate-100 text-slate-300"}`}
                 >
@@ -179,7 +179,7 @@ export default function StudentForm() {
                   <div className="space-y-4 sm:space-y-6">
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
-                      <input 
+                      <input
                         {...register("name")}
                         className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
                         placeholder="Rahul Sharma"
@@ -188,7 +188,7 @@ export default function StudentForm() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
-                      <input 
+                      <input
                         {...register("phone")}
                         type="tel"
                         className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
@@ -198,7 +198,7 @@ export default function StudentForm() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
-                      <input 
+                      <input
                         {...register("email")}
                         type="email"
                         className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
@@ -214,7 +214,7 @@ export default function StudentForm() {
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">What did you study last?</label>
                       <div className="relative">
-                        <select 
+                        <select
                           {...register("qualification")}
                           className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium appearance-none"
                         >
@@ -227,7 +227,7 @@ export default function StudentForm() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">College / School Name</label>
-                      <input 
+                      <input
                         {...register("college_name")}
                         className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
                         placeholder="Your University"
@@ -237,7 +237,7 @@ export default function StudentForm() {
                     <div className="grid grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">GPA / Percentage</label>
-                        <input 
+                        <input
                           {...register("grad_score")}
                           className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
                           placeholder="8.5 CGPA"
@@ -245,7 +245,7 @@ export default function StudentForm() {
                       </div>
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Backlogs</label>
-                        <input 
+                        <input
                           {...register("backlogs")}
                           type="number"
                           className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
@@ -255,7 +255,7 @@ export default function StudentForm() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">What do you want to study?</label>
-                      <input 
+                      <input
                         {...register("course_interest")}
                         className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
                         placeholder="e.g. MS in Data Science"
@@ -265,7 +265,7 @@ export default function StudentForm() {
                     <div className="grid grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Work Exp</label>
-                        <input 
+                        <input
                           {...register("work_experience")}
                           className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
                           placeholder="2 Years"
@@ -273,7 +273,7 @@ export default function StudentForm() {
                       </div>
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">IELTS / GRE</label>
-                        <input 
+                        <input
                           {...register("ielts_gre")}
                           className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
                           placeholder="7.5"
@@ -297,24 +297,24 @@ export default function StudentForm() {
                                 const isEurope = country === "Europe";
                                 const selectedEUCount = field.value.filter((v: string) => EUROPE_COUNTRIES.includes(v)).length;
                                 const isSelected = isEurope ? selectedEUCount > 0 : field.value.includes(country);
-                                
+
                                 return (
-                                  <div 
+                                  <div
                                     key={country}
                                     onClick={() => {
                                       if (isEurope) {
                                         setIsEuropeModalOpen(true);
                                         return;
                                       }
-                                      const newValue = isSelected 
+                                      const newValue = isSelected
                                         ? field.value.filter((v: string) => v !== country)
                                         : [...field.value, country];
                                       field.onChange(newValue);
                                     }}
                                     className={cn(
                                       "cursor-pointer px-3 py-3 sm:py-4 rounded-2xl border text-[11px] font-bold uppercase tracking-tight text-center transition-all flex items-center justify-center select-none shadow-sm gap-2",
-                                      isSelected 
-                                        ? "bg-slate-900 border-slate-900 text-white shadow-lg shadow-slate-200" 
+                                      isSelected
+                                        ? "bg-slate-900 border-slate-900 text-white shadow-lg shadow-slate-200"
                                         : "bg-slate-50 border-slate-100 text-slate-400 hover:border-slate-300"
                                     )}
                                   >
@@ -389,7 +389,7 @@ export default function StudentForm() {
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">When do you want to join?</label>
                         <div className="relative">
-                          <select 
+                          <select
                             {...register("intake")}
                             className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium appearance-none"
                           >
@@ -403,7 +403,7 @@ export default function StudentForm() {
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">How much can you spend?</label>
                         <div className="relative">
-                          <select 
+                          <select
                             {...register("budget")}
                             className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium appearance-none"
                           >
@@ -456,82 +456,82 @@ export default function StudentForm() {
           </form>
         </div>
         {/* Europe Selection Modal */}
-      <AnimatePresence>
-        {isEuropeModalOpen && (
-          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xl z-[100] flex items-center justify-center p-6">
-            <Controller
-              name="preferred_countries"
-              control={control}
-              render={({ field }) => (
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                  className="bg-white/90 backdrop-blur-3xl p-6 sm:p-10 rounded-[32px] sm:rounded-[48px] shadow-[0_32px_128px_rgba(0,0,0,0.1)] max-w-2xl w-full border border-white/20 relative overflow-hidden"
-                >
-                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary via-blue-400 to-indigo-500" />
-                  
-                  <div className="flex justify-between items-center mb-6 sm:mb-10">
-                    <div>
-                      <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tighter flex items-center gap-3">
-                        <Globe className="text-primary" size={24} /> Global Destinations
-                      </h3>
-                      <p className="text-slate-400 font-bold text-[10px] mt-2 uppercase tracking-[0.2em]">Select your preferred destinations</p>
+        <AnimatePresence>
+          {isEuropeModalOpen && (
+            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xl z-[100] flex items-center justify-center p-6">
+              <Controller
+                name="preferred_countries"
+                control={control}
+                render={({ field }) => (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                    className="bg-white/90 backdrop-blur-3xl p-6 sm:p-10 rounded-[32px] sm:rounded-[48px] shadow-[0_32px_128px_rgba(0,0,0,0.1)] max-w-2xl w-full border border-white/20 relative overflow-hidden"
+                  >
+                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary via-blue-400 to-indigo-500" />
+
+                    <div className="flex justify-between items-center mb-6 sm:mb-10">
+                      <div>
+                        <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tighter flex items-center gap-3">
+                          <Globe className="text-primary" size={24} /> Global Destinations
+                        </h3>
+                        <p className="text-slate-400 font-bold text-[10px] mt-2 uppercase tracking-[0.2em]">Select your preferred destinations</p>
+                      </div>
+                      <button onClick={() => setIsEuropeModalOpen(false)} className="bg-slate-50 p-3 rounded-2xl text-slate-400 hover:text-slate-900 transition-colors shadow-inner">
+                        <X size={20} strokeWidth={3} />
+                      </button>
                     </div>
-                    <button onClick={() => setIsEuropeModalOpen(false)} className="bg-slate-50 p-3 rounded-2xl text-slate-400 hover:text-slate-900 transition-colors shadow-inner">
-                      <X size={20} strokeWidth={3} />
-                    </button>
-                  </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto px-1 custom-scrollbar pb-6">
-                    {EUROPE_COUNTRIES.map(c => {
-                      const isSelected = field.value.includes(c);
-                      return (
-                        <div 
-                          key={c}
-                          onClick={() => {
-                            const newValue = isSelected 
-                              ? field.value.filter((v: string) => v !== c)
-                              : [...field.value, c];
-                            field.onChange(newValue);
-                          }}
-                          className={cn(
-                            "cursor-pointer px-4 py-3.5 rounded-2xl border text-[10px] font-black uppercase tracking-tight text-center transition-all flex items-center justify-center select-none shadow-sm",
-                            isSelected 
-                              ? "bg-slate-900 border-slate-900 text-white shadow-lg" 
-                              : "bg-white border-slate-100 text-slate-400 hover:border-slate-300"
-                          )}
-                        >
-                          {c}
-                        </div>
-                      );
-                    })}
-                  </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto px-1 custom-scrollbar pb-6">
+                      {EUROPE_COUNTRIES.map(c => {
+                        const isSelected = field.value.includes(c);
+                        return (
+                          <div
+                            key={c}
+                            onClick={() => {
+                              const newValue = isSelected
+                                ? field.value.filter((v: string) => v !== c)
+                                : [...field.value, c];
+                              field.onChange(newValue);
+                            }}
+                            className={cn(
+                              "cursor-pointer px-4 py-3.5 rounded-2xl border text-[10px] font-black uppercase tracking-tight text-center transition-all flex items-center justify-center select-none shadow-sm",
+                              isSelected
+                                ? "bg-slate-900 border-slate-900 text-white shadow-lg"
+                                : "bg-white border-slate-100 text-slate-400 hover:border-slate-300"
+                            )}
+                          >
+                            {c}
+                          </div>
+                        );
+                      })}
+                    </div>
 
-                  <div className="mt-10 pt-8 border-t border-slate-100 flex justify-between items-center">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-relaxed">
-                      {field.value.filter((v: string) => EUROPE_COUNTRIES.includes(v)).length} Selections Active
-                    </p>
-                    <button 
-                      onClick={() => setIsEuropeModalOpen(false)}
-                      className="px-8 py-4 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-2xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95"
-                    >
-                      Confirm Choices
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            />
-          </div>
-        )}
-      </AnimatePresence>
+                    <div className="mt-10 pt-8 border-t border-slate-100 flex justify-between items-center">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-relaxed">
+                        {field.value.filter((v: string) => EUROPE_COUNTRIES.includes(v)).length} Selections Active
+                      </p>
+                      <button
+                        onClick={() => setIsEuropeModalOpen(false)}
+                        className="px-8 py-4 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-2xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95"
+                      >
+                        Confirm Choices
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              />
+            </div>
+          )}
+        </AnimatePresence>
 
-      <style jsx global>{`
+        <style jsx global>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #f1f5f9; border-radius: 10px; }
       `}</style>
-    </div>
+      </div>
     </div>
   );
 }
