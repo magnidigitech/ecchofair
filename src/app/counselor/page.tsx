@@ -2,9 +2,9 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Search, Phone, Mail, MapPin, GraduationCap, 
-  Clock, Save, Globe, Loader2, Printer, 
+import {
+  Search, Phone, Mail, MapPin, GraduationCap,
+  Clock, Save, Globe, Loader2, Printer,
   Edit3, X, Check, User, ChevronRight, Mic,
   QrCode, ArrowRight, ShieldCheck
 } from "lucide-react";
@@ -13,6 +13,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Student, StudentCountry, Status } from "@/lib/mockDb";
 
 import { Logo } from "@/components/Logo";
+import { triggerStatusWebhook } from "../actions";
 
 export default function CounselorDashboard() {
   const [students, setStudents] = useState<any[]>([]);
@@ -34,7 +35,7 @@ export default function CounselorDashboard() {
       .eq("id", profile.id)
       .select()
       .single();
-    
+
     if (updatedProfile) setProfile(updatedProfile);
     setIsPresenceLoading(false);
   };
@@ -95,12 +96,12 @@ export default function CounselorDashboard() {
 
   const updateCountryProfile = async (countryId: string, updates: Partial<StudentCountry>) => {
     const { data: { user } } = await supabase.auth.getUser();
-    const finalUpdates = { 
-      ...updates, 
+    const finalUpdates = {
+      ...updates,
       handled_by: user?.id,
       ...(updates.status === 'Cold' ? { completed_at: new Date().toISOString() } : {})
     };
-    
+
     setStudents((prev: any[]) => prev.map(item => item.id === countryId ? { ...item, ...finalUpdates } : item));
     await supabase.from("student_countries").update(finalUpdates).eq("id", countryId);
   };
@@ -114,7 +115,7 @@ export default function CounselorDashboard() {
     return students.filter(item => {
       const s = (item as any).students;
       if (!s) return false;
-      
+
       // Filter by Tab
       const isCompleted = item.status === "Cold";
       if (activeTab === "queue" && isCompleted) return false;
@@ -122,7 +123,7 @@ export default function CounselorDashboard() {
       // Filter by Search
       const searchLower = searchQuery.toLowerCase();
       return (
-        s.name.toLowerCase().includes(searchLower) || 
+        s.name.toLowerCase().includes(searchLower) ||
         s.generated_id.toLowerCase().includes(searchLower) ||
         s.phone.includes(searchQuery) ||
         item.country_name.toLowerCase().includes(searchLower)
@@ -152,13 +153,13 @@ export default function CounselorDashboard() {
                 {profile?.is_online ? "I am Online" : "I am Offline"}
               </p>
             </div>
-            <button 
+            <button
               onClick={togglePresence}
               disabled={isPresenceLoading}
               className={cn(
                 "group relative px-5 py-2.5 rounded-2xl text-[10px] font-black transition-all shadow-xl active:scale-95",
-                profile?.is_online 
-                  ? "bg-slate-900 text-white shadow-slate-200" 
+                profile?.is_online
+                  ? "bg-slate-900 text-white shadow-slate-200"
                   : "bg-white text-slate-400 border border-slate-100 shadow-slate-100"
               )}
             >
@@ -168,8 +169,8 @@ export default function CounselorDashboard() {
 
           <div className="relative group px-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-slate-900 transition-colors" size={14} strokeWidth={3} />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Filter by name or ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -194,7 +195,7 @@ export default function CounselorDashboard() {
                 activeTab === "completed" ? "bg-white text-slate-900 shadow-lg shadow-slate-200" : "text-slate-400 hover:text-slate-600"
               )}
             >
-              Archived ({students.filter(s => s.status === 'Cold').length})
+              Completed ({students.filter(s => s.status === 'Cold').length})
             </button>
           </div>
         </div>
@@ -212,8 +213,8 @@ export default function CounselorDashboard() {
                 onClick={() => setSelectedProfileId(item.id)}
                 className={cn(
                   "p-6 cursor-pointer rounded-[32px] transition-all flex items-center justify-between group relative overflow-hidden",
-                  selectedProfileId === item.id 
-                    ? "bg-slate-900 text-white shadow-2xl shadow-slate-200 translate-x-1" 
+                  selectedProfileId === item.id
+                    ? "bg-slate-900 text-white shadow-2xl shadow-slate-200 translate-x-1"
                     : "bg-white border border-slate-50 hover:border-slate-100 hover:bg-slate-50/50"
                 )}
               >
@@ -238,9 +239,9 @@ export default function CounselorDashboard() {
                   </div>
                 </div>
                 {selectedProfileId === item.id && (
-                  <motion.div 
+                  <motion.div
                     layoutId="active-pill"
-                    className="absolute inset-y-0 right-0 w-1.5 bg-primary" 
+                    className="absolute inset-y-0 right-0 w-1.5 bg-primary"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                   />
@@ -272,10 +273,10 @@ export default function CounselorDashboard() {
               <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto my-4 shrink-0" />
               <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-12">
                 {selectedLead && (
-                  <StudentDetailWorkspace 
-                    lead={selectedLead} 
+                  <StudentDetailWorkspace
+                    lead={selectedLead}
                     onUpdateStatus={updateCountryProfile}
-                    onUpdateStudent={updateStudentDemographics} 
+                    onUpdateStudent={updateStudentDemographics}
                     isMobile={true}
                   />
                 )}
@@ -288,10 +289,10 @@ export default function CounselorDashboard() {
       {/* Main Workspace (Desktop Only) */}
       <div className="hidden md:flex flex-1 bg-[#FBFBFD] h-full overflow-y-auto custom-scrollbar print:bg-white print:overflow-visible relative pb-24">
         {selectedLead ? (
-          <StudentDetailWorkspace 
-            lead={selectedLead} 
+          <StudentDetailWorkspace
+            lead={selectedLead}
             onUpdateStatus={updateCountryProfile}
-            onUpdateStudent={updateStudentDemographics} 
+            onUpdateStudent={updateStudentDemographics}
           />
         ) : (
           <div className="h-full flex flex-col items-center justify-center p-12 text-center">
@@ -319,14 +320,14 @@ export default function CounselorDashboard() {
   );
 }
 
-function StudentDetailWorkspace({ 
-  lead, 
-  onUpdateStatus, 
+function StudentDetailWorkspace({
+  lead,
+  onUpdateStatus,
   onUpdateStudent,
   isMobile = false
-}: { 
-  lead: StudentCountry & { students: Student }, 
-  onUpdateStatus: (id: string, updates: Partial<StudentCountry>) => Promise<void>, 
+}: {
+  lead: StudentCountry & { students: Student },
+  onUpdateStatus: (id: string, updates: Partial<StudentCountry>) => Promise<void>,
   onUpdateStudent: (id: string, updates: Partial<Student>) => Promise<void>,
   isMobile?: boolean
 }) {
@@ -337,7 +338,7 @@ function StudentDetailWorkspace({
   const [isListening, setIsListening] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const recognitionRef = useRef<any>(null);
-  
+
   const [editForm, setEditForm] = useState({
     name: student.name,
     email: student.email,
@@ -382,11 +383,14 @@ function StudentDetailWorkspace({
     setIsSaving(true);
     const { data: { user } } = await createClient().auth.getUser();
     if (user) {
-      await onUpdateStatus(lead.id, { 
-        status: 'Cold', 
-        handled_by: user.id, 
-        completed_at: new Date().toISOString() 
+      await onUpdateStatus(lead.id, {
+        status: 'Cold',
+        handled_by: user.id,
+        completed_at: new Date().toISOString()
       });
+
+      // Notify Zapier that the meeting is completed
+      await triggerStatusWebhook(lead.id, "meeting_completed");
     }
     setIsSaving(false);
   };
@@ -424,7 +428,7 @@ function StudentDetailWorkspace({
       setIsListening(false);
       recognitionRef.current = null;
     };
-    
+
     recognition.onresult = (event: any) => {
       const transcript = event.results[event.results.length - 1][0].transcript;
       if (transcript) {
@@ -446,7 +450,7 @@ function StudentDetailWorkspace({
       <AnimatePresence>
         {showQR && (
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xl z-[100] flex items-center justify-center p-6 no-print">
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
@@ -454,7 +458,7 @@ function StudentDetailWorkspace({
             >
               <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary via-blue-400 to-indigo-500" />
               <button onClick={() => setShowQR(false)} className="absolute top-8 right-8 text-slate-300 hover:text-slate-900 transition-colors"><X size={24} strokeWidth={3} /></button>
-              
+
               <div className="mb-12">
                 <div className="w-20 h-20 bg-primary/5 rounded-[28px] flex items-center justify-center mx-auto mb-8 text-primary shadow-inner">
                   <QrCode size={40} strokeWidth={2.5} />
@@ -464,7 +468,7 @@ function StudentDetailWorkspace({
               </div>
 
               <div className="bg-[#FBFBFD] p-10 rounded-[40px] border border-slate-50 mb-10 inline-block shadow-inner group">
-                <img 
+                <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(secureUrl)}`}
                   alt="Student Link QR"
                   className="w-48 h-48 mix-blend-multiply transition-transform group-hover:scale-105"
@@ -476,7 +480,7 @@ function StudentDetailWorkspace({
                 <div className="py-4 px-6 bg-slate-900 rounded-2xl font-black text-xs text-white tracking-widest shadow-2xl shadow-slate-200">
                   {secureHash}
                 </div>
-                <button 
+                <button
                   onClick={() => {
                     navigator.clipboard.writeText(secureUrl);
                     alert("Secure Link Copied!");
@@ -494,15 +498,15 @@ function StudentDetailWorkspace({
       <div className="flex flex-col md:flex-row justify-between items-start mb-10 no-print gap-8">
         <div className="flex-1 w-full min-w-0 space-y-4">
           <div className="flex items-center gap-3">
-             <div className="px-2.5 py-1 bg-slate-900 text-white rounded-lg text-[9px] font-black uppercase tracking-widest leading-none shrink-0">{lead.country_name}</div>
-             <div className="h-3 w-[1px] bg-slate-200 shrink-0" />
-             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">Student ID: {student.generated_id}</span>
+            <div className="px-2.5 py-1 bg-slate-900 text-white rounded-lg text-[9px] font-black uppercase tracking-widest leading-none shrink-0">{lead.country_name}</div>
+            <div className="h-3 w-[1px] bg-slate-200 shrink-0" />
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">Student ID: {student.generated_id}</span>
           </div>
 
           {isEditing ? (
-            <input 
+            <input
               value={editForm.name}
-              onChange={(e) => setEditForm({...editForm, name: e.target.value})}
+              onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
               autoFocus
               className="text-2xl sm:text-4xl font-black tracking-tighter w-full bg-white px-4 py-2 sm:px-5 sm:py-3 rounded-2xl border-2 border-slate-100 outline-none shadow-inner"
             />
@@ -513,19 +517,19 @@ function StudentDetailWorkspace({
           <div className="flex flex-wrap gap-x-6 sm:gap-x-8 gap-y-3 pt-1">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white border border-slate-100 flex items-center justify-center text-slate-400 shrink-0"><Phone size={10} /></div>
-              {isEditing ? <input value={editForm.phone} onChange={(e) => setEditForm({...editForm, phone: e.target.value})} className="bg-white rounded-xl px-3 py-1 border border-slate-100 text-[10px] sm:text-xs font-bold w-32 sm:w-40" /> : <span className="text-[10px] sm:text-xs font-black text-slate-600 tracking-tight truncate">{student.phone}</span>}
+              {isEditing ? <input value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} className="bg-white rounded-xl px-3 py-1 border border-slate-100 text-[10px] sm:text-xs font-bold w-32 sm:w-40" /> : <span className="text-[10px] sm:text-xs font-black text-slate-600 tracking-tight truncate">{student.phone}</span>}
             </div>
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white border border-slate-100 flex items-center justify-center text-slate-400 shrink-0"><Mail size={10} /></div>
-              {isEditing ? <input value={editForm.email} onChange={(e) => setEditForm({...editForm, email: e.target.value})} className="bg-white rounded-xl px-3 py-1 border border-slate-100 text-[10px] sm:text-xs font-bold w-44 sm:w-56" /> : <span className="text-[10px] sm:text-xs font-black text-slate-600 tracking-tight truncate">{student.email}</span>}
+              {isEditing ? <input value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} className="bg-white rounded-xl px-3 py-1 border border-slate-100 text-[10px] sm:text-xs font-bold w-44 sm:w-56" /> : <span className="text-[10px] sm:text-xs font-black text-slate-600 tracking-tight truncate">{student.email}</span>}
             </div>
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto shrink-0">
           <div className="flex bg-white border border-slate-100 p-1.5 rounded-2xl shadow-sm justify-center sm:justify-start">
-            <button 
-              onClick={() => setShowQR(true)} 
+            <button
+              onClick={() => setShowQR(true)}
               className="flex-1 sm:flex-none p-2.5 text-slate-400 hover:text-primary rounded-xl transition-all hover:bg-primary/5 group"
               title="Generate Student Pass"
             >
@@ -535,9 +539,9 @@ function StudentDetailWorkspace({
               <Printer className="w-5 h-5 sm:w-[18px] sm:h-[18px] mx-auto" strokeWidth={2.5} />
             </button>
           </div>
-          
+
           {lead.status !== 'Cold' && (
-            <button 
+            <button
               onClick={handleCompleteCounselling}
               disabled={isSaving}
               className="w-full sm:w-auto px-6 py-4 sm:py-3 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-2xl shadow-emerald-200 hover:bg-emerald-600 transition-all flex items-center justify-center gap-3 active:scale-95 shrink-0"
@@ -573,12 +577,12 @@ function StudentDetailWorkspace({
                 onClick={() => onUpdateStatus(lead.id, { status: s })}
                 className={cn(
                   "flex items-center justify-between px-5 py-4 md:py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all",
-                  lead.status === s 
-                    ? "bg-slate-900 text-white shadow-xl shadow-slate-300 md:translate-x-1" 
+                  lead.status === s
+                    ? "bg-slate-900 text-white shadow-xl shadow-slate-300 md:translate-x-1"
                     : "bg-white md:bg-transparent border border-slate-50 md:border-transparent text-slate-400 hover:bg-white hover:shadow-md hover:shadow-slate-100"
                 )}
               >
-                {s === 'Cold' ? 'Completed' : s} 
+                {s === 'Cold' ? 'Completed' : s}
                 {lead.status === s && <Check className="w-3 h-3" strokeWidth={4} />}
               </button>
             ))}
@@ -590,91 +594,91 @@ function StudentDetailWorkspace({
           <div className="absolute top-0 right-0 p-6 opacity-[0.03]">
             <GraduationCap size={100} />
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-8 relative z-10">
             <div className="space-y-1.5 min-w-0">
               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5 flex items-center gap-1.5"><GraduationCap size={10} strokeWidth={3} /> Education</p>
-              {isEditing ? <input value={editForm.qualification} onChange={(e) => setEditForm({...editForm, qualification: e.target.value})} className="bg-[#FBFBFD] p-3 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.qualification}</p>}
+              {isEditing ? <input value={editForm.qualification} onChange={(e) => setEditForm({ ...editForm, qualification: e.target.value })} className="bg-[#FBFBFD] p-3 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.qualification}</p>}
             </div>
             <div className="space-y-1.5 min-w-0">
               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5 flex items-center gap-1.5">College Name</p>
-              {isEditing ? <input value={editForm.college_name} onChange={(e) => setEditForm({...editForm, college_name: e.target.value})} className="bg-[#FBFBFD] p-3 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.college_name || "N/A"}</p>}
+              {isEditing ? <input value={editForm.college_name} onChange={(e) => setEditForm({ ...editForm, college_name: e.target.value })} className="bg-[#FBFBFD] p-3 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.college_name || "N/A"}</p>}
             </div>
             <div className="grid grid-cols-2 gap-6 col-span-1 sm:col-span-2 md:col-span-1">
-               <div className="space-y-1.5 min-w-0">
-                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5 flex items-center gap-1.5">Score / GPA</p>
-                 {isEditing ? <input value={editForm.grad_score} onChange={(e) => setEditForm({...editForm, grad_score: e.target.value})} className="bg-[#FBFBFD] p-3 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.grad_score || "N/A"}</p>}
-               </div>
-               <div className="space-y-1.5 min-w-0">
-                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5 flex items-center gap-1.5">Backlogs</p>
-                 {isEditing ? <input type="number" value={editForm.backlogs} onChange={(e) => setEditForm({...editForm, backlogs: parseInt(e.target.value) || 0})} className="bg-[#FBFBFD] p-3 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.backlogs ?? 0}</p>}
-               </div>
+              <div className="space-y-1.5 min-w-0">
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5 flex items-center gap-1.5">Score / GPA</p>
+                {isEditing ? <input value={editForm.grad_score} onChange={(e) => setEditForm({ ...editForm, grad_score: e.target.value })} className="bg-[#FBFBFD] p-3 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.grad_score || "N/A"}</p>}
+              </div>
+              <div className="space-y-1.5 min-w-0">
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5 flex items-center gap-1.5">Backlogs</p>
+                {isEditing ? <input type="number" value={editForm.backlogs} onChange={(e) => setEditForm({ ...editForm, backlogs: parseInt(e.target.value) || 0 })} className="bg-[#FBFBFD] p-3 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.backlogs ?? 0}</p>}
+              </div>
             </div>
             <div className="space-y-1.5 min-w-0">
               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5 flex items-center gap-1.5"><Check className="w-2.5 h-2.5" strokeWidth={3} /> Proficiency Scores</p>
-              {isEditing ? <input value={editForm.ielts_gre} onChange={(e) => setEditForm({...editForm, ielts_gre: e.target.value})} className="bg-[#FBFBFD] p-3 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.ielts_gre || "N/A"}</p>}
+              {isEditing ? <input value={editForm.ielts_gre} onChange={(e) => setEditForm({ ...editForm, ielts_gre: e.target.value })} className="bg-[#FBFBFD] p-3 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.ielts_gre || "N/A"}</p>}
             </div>
             <div className="space-y-1.5 min-w-0">
               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5 flex items-center gap-1.5"><Save size={10} strokeWidth={3} /> Work Experience</p>
-              {isEditing ? <input value={editForm.work_experience} onChange={(e) => setEditForm({...editForm, work_experience: e.target.value})} className="bg-[#FBFBFD] p-2.5 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.work_experience || "None"}</p>}
+              {isEditing ? <input value={editForm.work_experience} onChange={(e) => setEditForm({ ...editForm, work_experience: e.target.value })} className="bg-[#FBFBFD] p-2.5 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.work_experience || "None"}</p>}
             </div>
             <div className="space-y-1.5 min-w-0">
               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5 flex items-center gap-1.5"><MapPin size={10} strokeWidth={3} /> Course Interest</p>
-              {isEditing ? <input value={editForm.course_interest} onChange={(e) => setEditForm({...editForm, course_interest: e.target.value})} className="bg-[#FBFBFD] p-2.5 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate" title={student.course_interest}>{student.course_interest || "N/A"}</p>}
+              {isEditing ? <input value={editForm.course_interest} onChange={(e) => setEditForm({ ...editForm, course_interest: e.target.value })} className="bg-[#FBFBFD] p-2.5 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate" title={student.course_interest}>{student.course_interest || "N/A"}</p>}
             </div>
             <div className="grid grid-cols-2 gap-6">
-               <div className="space-y-1.5">
-                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Visa History</p>
-                 {isEditing ? (
-                   <div className="flex gap-1.5">
-                     {[true, false].map(v => (
-                       <button 
-                         key={v ? "Yes" : "No"}
-                         onClick={() => setEditForm({...editForm, visa_refusal: v})}
-                         className={cn(
-                           "flex-1 py-2 rounded-lg text-[9px] font-black transition-all border uppercase tracking-widest",
-                           editForm.visa_refusal === v ? "bg-slate-900 text-white border-slate-900 shadow-lg" : "bg-white text-slate-400 border-slate-100"
-                         )}
-                       >
-                         {v ? "Yes" : "No"}
-                       </button>
-                     ))}
-                   </div>
-                 ) : (
-                   <span className={cn(
-                     "text-[9px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-widest inline-block h-fit",
-                     student.visa_refusal ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100"
-                   )}>
-                     {student.visa_refusal ? "Prior Refusal" : "Clean History"}
-                   </span>
-                 )}
-               </div>
-               <div className="space-y-1.5">
-                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Passport Status</p>
-                 {isEditing ? (
-                   <div className="flex gap-1.5">
-                     {[true, false].map(v => (
-                       <button 
-                         key={v ? "Yes" : "No"}
-                         onClick={() => setEditForm({...editForm, has_passport: v})}
-                         className={cn(
-                           "flex-1 py-2 rounded-lg text-[9px] font-black transition-all border uppercase tracking-widest",
-                           editForm.has_passport === v ? "bg-slate-900 text-white border-slate-900 shadow-lg" : "bg-white text-slate-400 border-slate-100"
-                         )}
-                       >
-                         {v ? "Yes" : "No"}
-                       </button>
-                     ))}
-                   </div>
-                 ) : (
-                   <span className={cn(
-                     "text-[9px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-widest inline-block h-fit",
-                     student.has_passport ? "bg-slate-900 text-white shadow-lg shadow-slate-200" : "bg-amber-50 text-amber-600 border border-amber-100"
-                   )}>
-                     {student.has_passport ? "Verified" : "Missing Doc"}
-                   </span>
-                 )}
-               </div>
+              <div className="space-y-1.5">
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Visa History</p>
+                {isEditing ? (
+                  <div className="flex gap-1.5">
+                    {[true, false].map(v => (
+                      <button
+                        key={v ? "Yes" : "No"}
+                        onClick={() => setEditForm({ ...editForm, visa_refusal: v })}
+                        className={cn(
+                          "flex-1 py-2 rounded-lg text-[9px] font-black transition-all border uppercase tracking-widest",
+                          editForm.visa_refusal === v ? "bg-slate-900 text-white border-slate-900 shadow-lg" : "bg-white text-slate-400 border-slate-100"
+                        )}
+                      >
+                        {v ? "Yes" : "No"}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <span className={cn(
+                    "text-[9px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-widest inline-block h-fit",
+                    student.visa_refusal ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                  )}>
+                    {student.visa_refusal ? "Prior Refusal" : "Clean History"}
+                  </span>
+                )}
+              </div>
+              <div className="space-y-1.5">
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Passport Status</p>
+                {isEditing ? (
+                  <div className="flex gap-1.5">
+                    {[true, false].map(v => (
+                      <button
+                        key={v ? "Yes" : "No"}
+                        onClick={() => setEditForm({ ...editForm, has_passport: v })}
+                        className={cn(
+                          "flex-1 py-2 rounded-lg text-[9px] font-black transition-all border uppercase tracking-widest",
+                          editForm.has_passport === v ? "bg-slate-900 text-white border-slate-900 shadow-lg" : "bg-white text-slate-400 border-slate-100"
+                        )}
+                      >
+                        {v ? "Yes" : "No"}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <span className={cn(
+                    "text-[9px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-widest inline-block h-fit",
+                    student.has_passport ? "bg-slate-900 text-white shadow-lg shadow-slate-200" : "bg-amber-50 text-amber-600 border border-amber-100"
+                  )}>
+                    {student.has_passport ? "Verified" : "Missing Doc"}
+                  </span>
+                )}
+              </div>
             </div>
             <div className="space-y-3">
               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5 flex items-center gap-1.5"><Globe size={10} strokeWidth={3} /> Top Countries</p>
@@ -687,11 +691,11 @@ function StudentDetailWorkspace({
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-1.5 min-w-0">
                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Joining Intake</p>
-                {isEditing ? <input value={editForm.intake} onChange={(e) => setEditForm({...editForm, intake: e.target.value})} className="bg-[#FBFBFD] p-2.5 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.intake}</p>}
+                {isEditing ? <input value={editForm.intake} onChange={(e) => setEditForm({ ...editForm, intake: e.target.value })} className="bg-[#FBFBFD] p-2.5 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.intake}</p>}
               </div>
               <div className="space-y-1.5 min-w-0">
                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Budget</p>
-                {isEditing ? <input value={editForm.budget} onChange={(e) => setEditForm({...editForm, budget: e.target.value})} className="bg-[#FBFBFD] p-2.5 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.budget}</p>}
+                {isEditing ? <input value={editForm.budget} onChange={(e) => setEditForm({ ...editForm, budget: e.target.value })} className="bg-[#FBFBFD] p-2.5 w-full rounded-xl border-slate-100 text-xs font-bold" /> : <p className="text-xs font-black text-slate-900 uppercase tracking-tight truncate">{student.budget}</p>}
               </div>
             </div>
           </div>
@@ -702,33 +706,33 @@ function StudentDetailWorkspace({
       <div className="border-t border-slate-100 pt-12 no-print">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-5">
-             <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.3em]">Meeting Notes</h3>
-             <button 
-               onClick={toggleSpeechRecognition}
-               className={cn(
-                 "p-2.5 rounded-xl transition-all relative group shadow-sm",
-                 isListening ? "bg-rose-50 text-rose-600" : "bg-white border border-slate-100 text-slate-400 hover:text-slate-900"
-               )}
-               title={isListening ? "Stop Listening" : "Start Voice Notes"}
-             >
-               <motion.div
-                 animate={isListening ? { scale: [1, 1.2, 1] } : {}}
-                 transition={{ repeat: Infinity, duration: 1.5 }}
-               >
-                 <Mic size={16} strokeWidth={2.5} className={isListening ? "fill-rose-600" : ""} />
-               </motion.div>
-               {isListening && (
-                 <span className="absolute -inset-1 border-2 border-rose-200 rounded-full animate-ping" />
-               )}
-             </button>
-             {isListening && <span className="text-[9px] font-black text-rose-500 animate-pulse tracking-[0.2em] uppercase">Listening now...</span>}
+            <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.3em]">Meeting Notes</h3>
+            <button
+              onClick={toggleSpeechRecognition}
+              className={cn(
+                "p-2.5 rounded-xl transition-all relative group shadow-sm",
+                isListening ? "bg-rose-50 text-rose-600" : "bg-white border border-slate-100 text-slate-400 hover:text-slate-900"
+              )}
+              title={isListening ? "Stop Listening" : "Start Voice Notes"}
+            >
+              <motion.div
+                animate={isListening ? { scale: [1, 1.2, 1] } : {}}
+                transition={{ repeat: Infinity, duration: 1.5 }}
+              >
+                <Mic size={16} strokeWidth={2.5} className={isListening ? "fill-rose-600" : ""} />
+              </motion.div>
+              {isListening && (
+                <span className="absolute -inset-1 border-2 border-rose-200 rounded-full animate-ping" />
+              )}
+            </button>
+            {isListening && <span className="text-[9px] font-black text-rose-500 animate-pulse tracking-[0.2em] uppercase">Listening now...</span>}
           </div>
-          <button 
+          <button
             onClick={async () => {
               setIsSaving(true);
               await onUpdateStatus(lead.id, { notes: localNotes });
               setIsSaving(false);
-            }} 
+            }}
             disabled={isSaving || localNotes === lead.notes}
             className="text-[9px] font-black text-primary disabled:opacity-30 uppercase tracking-[0.2em] flex items-center gap-2 transition-all hover:translate-y-[-1px]"
           >
@@ -738,7 +742,7 @@ function StudentDetailWorkspace({
         </div>
         <div className="relative group">
           <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/10 to-blue-500/10 rounded-[28px] blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity" />
-          <textarea 
+          <textarea
             value={localNotes}
             onChange={(e) => setLocalNotes(e.target.value)}
             placeholder={`Document insights for ${student.name.split(" ")[0]}...`}
@@ -758,7 +762,7 @@ function StudentDetailWorkspace({
             <p className="text-[11px] font-black uppercase tracking-widest bg-black text-white px-4 py-2 rounded-lg">ID: {student.generated_id}</p>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-2 gap-20 mb-16">
           <div className="space-y-6">
             <h2 className="text-[10px] font-black uppercase tracking-[0.3em] border-b-2 border-slate-100 pb-3 mb-6">Candidate Meta</h2>

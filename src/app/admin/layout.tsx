@@ -28,7 +28,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
   return (
     <AdminProvider>
-      <div className="min-h-screen bg-[#FBFBFD] flex flex-col lg:flex-row-reverse">
+      <div className="min-h-screen bg-[#FBFBFD] flex flex-col lg:flex-row">
         <AdminNav profile={profile} />
 
         {/* Main Area */}

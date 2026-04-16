@@ -36,7 +36,7 @@ export function AdminNav({ profile }: AdminNavProps) {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="w-64 bg-white border-l border-slate-100 hidden lg:flex flex-col sticky top-0 h-screen">
+      <aside className="w-64 bg-white border-r border-slate-100 hidden lg:flex flex-col sticky top-0 h-screen">
         <div className="p-8">
           <Logo className="scale-90" />
           <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-3 ml-1">Admin Center</p>
