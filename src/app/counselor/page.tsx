@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { cn, getSecurityCheck } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
-import { Student, StudentCountry } from "@/lib/mockDb";
+import { Student, StudentCountry, Status } from "@/lib/mockDb";
 
 export default function CounselorDashboard() {
   const [students, setStudents] = useState<any[]>([]);
@@ -379,7 +379,7 @@ function StudentDetailWorkspace({
     recognition.start();
   };
 
-  const statusOptions = ['New', 'Warm', 'Hot', 'Cold'];
+  const statusOptions: Status[] = ['New', 'Warm', 'Hot', 'Cold'];
 
   return (
     <div className="max-w-4xl mx-auto p-12 print-area print:p-0">
