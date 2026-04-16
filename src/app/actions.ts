@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@supabase/supabase-js";
-import { generateStudentId, getSecurityCheck } from "@/lib/utils";
+import { getSecurityCheck } from "@/lib/utils";
 
 // Initialize a server-only Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
