@@ -13,7 +13,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Student, StudentCountry } from "@/lib/mockDb";
 
 export default function CounselorDashboard() {
-  const [students, setStudents] = useState<Student[]>([]);
+  const [students, setStudents] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"queue" | "completed">("queue");
