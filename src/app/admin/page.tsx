@@ -405,7 +405,7 @@ export default function AdminDashboard() {
           {/* Mobile Card View */}
           <div className="lg:hidden space-y-6">
             {students.map(s => (
-              <StudentCard key={s.id} student={s} counselors={counselors} />
+              <StudentCard key={s.id} student={s} counselors={counselors} fetchStudents={fetchStudents} />
             ))}
           </div>
         </section>
@@ -423,7 +423,7 @@ function SimpleStat({ label, value }: { label: string, value: string | number })
   );
 }
 
-function StudentCard({ student, counselors }: { student: Student, counselors: any[] }) {
+function StudentCard({ student, counselors, fetchStudents }: { student: Student, counselors: any[], fetchStudents: () => Promise<void> }) {
   const profiles = student.student_countries || [];
   const allDone = profiles.length > 0 && profiles.every((p: any) => p.status === 'Cold');
 
