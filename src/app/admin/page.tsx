@@ -424,6 +424,7 @@ function SimpleStat({ label, value }: { label: string, value: string | number })
 }
 
 function StudentCard({ student, counselors, fetchStudents }: { student: Student, counselors: any[], fetchStudents: () => Promise<void> }) {
+  const router = useRouter();
   const profiles = student.student_countries || [];
   const allDone = profiles.length > 0 && profiles.every((p: any) => p.status === 'Cold');
 
