@@ -19,6 +19,7 @@ interface AdminNavProps {
 
 export function AdminNav({ profile }: AdminNavProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const pathname = usePathname();
   const { onDownload } = useAdmin();
 
@@ -36,13 +37,42 @@ export function AdminNav({ profile }: AdminNavProps) {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-100 hidden lg:flex flex-col sticky top-0 h-screen">
-        <div className="p-8">
-          <Logo className="scale-90" />
-          <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-3 ml-1">Admin Center</p>
+      <motion.aside 
+        initial={false}
+        animate={{ width: isHovered ? 256 : 80 }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="bg-white border-r border-slate-100 hidden lg:flex flex-col sticky top-0 h-screen z-[100] transition-shadow duration-300"
+        style={{ boxShadow: isHovered ? '0 20px 25px -5px rgb(0 0 0 / 0.1)' : 'none' }}
+      >
+        <div className="p-6 h-24 flex items-center justify-center overflow-hidden">
+          <AnimatePresence mode="wait">
+            {isHovered ? (
+              <motion.div
+                key="full-logo"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                className="flex flex-col items-center"
+              >
+                <Logo className="scale-75" />
+                <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em] mt-2 whitespace-nowrap">Admin Center</p>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="mini-logo"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg"
+              >
+                E
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
         
-        <nav className="flex-1 px-4 space-y-2 mt-4">
+        <nav className="flex-1 px-3 space-y-2 mt-4">
           {navLinks.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
@@ -51,29 +81,57 @@ export function AdminNav({ profile }: AdminNavProps) {
                 key={link.label}
                 href={link.href} 
                 className={cn(
-                  "flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 font-bold text-[11px] uppercase tracking-widest",
+                  "flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 font-bold text-[11px] uppercase tracking-widest relative group",
                   isActive 
                     ? "bg-slate-900 text-white shadow-xl shadow-slate-200" 
                     : "text-slate-400 hover:bg-slate-50 hover:text-slate-900"
                 )}
               >
-                <Icon size={16} className={cn("mr-3", isActive ? "text-primary" : "")} />
-                {link.label}
+                <Icon size={18} className={cn("", isActive ? "text-primary" : "group-hover:scale-110 transition-transform")} />
+                <AnimatePresence>
+                  {isHovered && (
+                    <motion.span
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      className="ml-4 whitespace-nowrap"
+                    >
+                      {link.label}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+                {!isHovered && isActive && (
+                  <motion.div 
+                    layoutId="active-dot"
+                    className="absolute -left-1 w-1 h-6 bg-primary rounded-r-full"
+                  />
+                )}
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-6 mt-auto">
-          <div className="bg-slate-50 p-5 rounded-[24px] flex items-center justify-between border border-slate-100 shadow-inner">
-            <div className="flex flex-col overflow-hidden">
-               <span className="text-[10px] font-black tracking-widest uppercase text-slate-900">{profile?.role}</span>
-               <span className="text-[9px] text-slate-400 font-bold truncate tracking-tight">{profile?.email}</span>
-            </div>
-            <LogOutButton />
+        <div className="p-4 mt-auto">
+          <div className={cn(
+            "bg-slate-50 rounded-[24px] flex items-center transition-all duration-300 border border-slate-100 shadow-inner",
+            isHovered ? "p-4 justify-between" : "p-2 justify-center"
+          )}>
+            {isHovered ? (
+              <>
+                <div className="flex flex-col overflow-hidden">
+                   <span className="text-[9px] font-black tracking-widest uppercase text-slate-900 truncate">{profile?.role}</span>
+                   <span className="text-[8px] text-slate-400 font-bold truncate tracking-tight">{profile?.email}</span>
+                </div>
+                <LogOutButton />
+              </>
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-slate-900 font-black text-[10px] shadow-sm border border-slate-200">
+                {profile?.email?.charAt(0).toUpperCase()}
+              </div>
+            )}
           </div>
         </div>
-      </aside>
+      </motion.aside>
 
       {/* Mobile Top Header */}
       <header className="fixed top-0 left-0 right-0 h-20 bg-white/80 backdrop-blur-2xl border-b border-slate-100/50 z-[60] flex items-center px-6 justify-between lg:hidden transition-all duration-300">

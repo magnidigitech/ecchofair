@@ -9,12 +9,14 @@ import { Student, StudentCountry } from "@/lib/mockDb";
 import { cn } from "@/lib/utils";
 
 import { useAdmin } from "@/context/AdminContext";
-import { Mail, Phone, GraduationCap, MapPin, Clock, User, ChevronRight } from "lucide-react";
+import { Mail, Phone, GraduationCap, MapPin, Clock, User, ChevronRight, MessageSquare } from "lucide-react";
+import { getSecurityCheck, generateWhatsAppLink } from "@/lib/utils";
 
 export default function AdminDashboard() {
   const [students, setStudents] = useState<Student[]>([]);
   const [counselors, setCounselors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeCountry, setActiveCountry] = useState<string>("");
   const supabase = createClient();
 
   const fetchStudents = async () => {
@@ -57,6 +59,13 @@ export default function AdminDashboard() {
   useEffect(() => {
     setOnDownload(() => handleExport);
   }, [students, counselors]);
+
+  useEffect(() => {
+    const countryEntries = Object.entries(metrics.countryStats).sort((a,b) => b[1]-a[1]);
+    if (!activeCountry && countryEntries.length > 0) {
+      setActiveCountry(countryEntries[0][0]);
+    }
+  }, [metrics.countryStats]);
 
   const metrics = useMemo(() => {
     const total = students.length;
@@ -162,30 +171,69 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
           {/* Destination Chart */}
           <section>
-            <div className="mb-12">
-              <h2 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Top Countries</h2>
-              <div className="h-[1px] w-8 bg-slate-200" />
+            <div className="mb-12 flex items-center justify-between">
+              <div>
+                <h2 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Top Countries</h2>
+                <div className="h-[1px] w-8 bg-slate-200" />
+              </div>
+              <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{Object.keys(metrics.countryStats).length} Destinations</span>
             </div>
-            <div className="space-y-8">
-              {Object.entries(metrics.countryStats).sort((a,b) => b[1]-a[1]).map(([country, count]) => {
-                const percentage = Math.round((count / (metrics.total || 1)) * 100);
-                return (
-                  <div key={country} className="space-y-3">
-                    <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
-                      <span className="text-slate-500 font-bold">{country}</span>
-                      <span className="text-slate-900">{count} Candidates</span>
-                    </div>
-                    <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${percentage}%` }}
-                        className="h-full bg-slate-900 rounded-full"
-                      />
-                    </div>
+
+            <div className="flex flex-wrap gap-2 mb-10">
+              {Object.entries(metrics.countryStats).sort((a,b) => b[1]-a[1]).map(([country, count]) => (
+                <button
+                  key={country}
+                  onClick={() => setActiveCountry(country)}
+                  className={cn(
+                    "px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all",
+                    activeCountry === country
+                      ? "bg-slate-900 text-white shadow-xl shadow-slate-200"
+                      : "bg-white border border-slate-100 text-slate-400 hover:bg-slate-50"
+                  )}
+                >
+                  {country} ({count})
+                </button>
+              ))}
+            </div>
+
+            <AnimatePresence mode="wait">
+              {activeCountry && (
+                <motion.div
+                  key={activeCountry}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="bg-white rounded-[32px] p-8 border border-slate-50 shadow-xl shadow-slate-200/20"
+                >
+                  <div className="flex items-center justify-between mb-8 pb-6 border-b border-slate-50">
+                     <h4 className="text-xs font-black uppercase tracking-widest text-slate-900">Recent {activeCountry} Leads</h4>
+                     <div className="px-3 py-1 bg-primary/5 text-primary rounded-lg text-[9px] font-black">LIVE VIEW</div>
                   </div>
-                );
-              })}
-            </div>
+                  <div className="space-y-6">
+                    {students
+                      .filter(s => (s as any).student_countries?.some((p: any) => p.country_name === activeCountry))
+                      .slice(0, 3)
+                      .map(s => (
+                        <div key={s.id} className="flex items-center justify-between group">
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center font-black text-xs text-slate-400 border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-all">
+                              {s.name.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="text-[11px] font-black text-slate-900 tracking-tight">{s.name}</p>
+                              <p className="text-[9px] text-slate-400 font-bold tracking-tight uppercase">{s.generated_id}</p>
+                            </div>
+                          </div>
+                          <ChevronRight size={14} className="text-slate-200 group-hover:text-primary transition-all group-hover:translate-x-1" />
+                        </div>
+                      ))}
+                    {students.filter(s => (s as any).student_countries?.some((p: any) => p.country_name === activeCountry)).length === 0 && (
+                      <p className="text-[10px] text-slate-300 font-bold uppercase tracking-widest text-center py-4">No recent activity</p>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </section>
 
           {/* Activity Chart */}
@@ -269,8 +317,29 @@ export default function AdminDashboard() {
                 {students.map(s => (
                   <tr key={s.id} className="hover:bg-slate-50/50 transition-all duration-500 group">
                     <td className="py-10 pr-12">
-                       <p className="text-sm font-black text-slate-900 tracking-tight">{s.name}</p>
-                       <p className="text-[10px] text-slate-400 font-bold mt-1 tracking-tight uppercase">{s.email}</p>
+                       <div className="flex items-center justify-between">
+                         <div>
+                           <p className="text-sm font-black text-slate-900 tracking-tight">{s.name}</p>
+                           <p className="text-[10px] text-slate-400 font-bold mt-1 tracking-tight uppercase">{s.email}</p>
+                         </div>
+                         <a 
+                           href={generateWhatsAppLink({
+                             name: s.name,
+                             phone: s.phone,
+                             course_interest: s.course_interest,
+                             preferred_countries: (s as any).student_countries?.map((p: any) => p.country_name) || [],
+                             intake: s.intake,
+                             generated_id: s.generated_id,
+                             passport_url: `${(process.env.NEXT_PUBLIC_SITE_URL || "https://fair.ecchouk.co.uk").replace(/\/$/, "")}/status/${s.generated_id}-${getSecurityCheck(s.generated_id)}`
+                           })}
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           className="p-2 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                           title="WhatsApp Share"
+                         >
+                           <MessageSquare size={16} strokeWidth={3} />
+                         </a>
+                       </div>
                     </td>
                     <td className="py-10 px-12">
                       <span className="font-black text-[11px] bg-slate-900 text-white px-3 py-1.5 rounded-xl shadow-lg shadow-slate-200 tracking-wider transition-all group-hover:-translate-y-0.5 inline-block">{s.generated_id}</span>
@@ -348,9 +417,27 @@ function StudentCard({ student, counselors }: { student: Student, counselors: an
       {/* Top Header Row */}
       <div className="flex justify-between items-center mb-4">
         <h4 className="text-base font-black text-slate-900 tracking-tight truncate mr-4">{student.name}</h4>
-        <span className="shrink-0 text-[10px] bg-slate-900 text-white px-3 py-1.5 rounded-xl font-black tracking-widest shadow-lg shadow-slate-200">
-          {student.generated_id}
-        </span>
+        <div className="flex items-center gap-2">
+           <a 
+             href={generateWhatsAppLink({
+               name: student.name,
+               phone: student.phone,
+               course_interest: student.course_interest,
+               preferred_countries: (student as any).student_countries?.map((p: any) => p.country_name) || [],
+               intake: student.intake,
+               generated_id: student.generated_id,
+               passport_url: `${(process.env.NEXT_PUBLIC_SITE_URL || "https://fair.ecchouk.co.uk").replace(/\/$/, "")}/status/${student.generated_id}-${getSecurityCheck(student.generated_id)}`
+             })}
+             target="_blank"
+             rel="noopener noreferrer"
+             className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"
+           >
+             <MessageSquare size={14} strokeWidth={3} />
+           </a>
+           <span className="shrink-0 text-[10px] bg-slate-900 text-white px-3 py-1.5 rounded-xl font-black tracking-widest shadow-lg shadow-slate-200">
+             {student.generated_id}
+           </span>
+        </div>
       </div>
 
       {/* Secondary Info Row */}
