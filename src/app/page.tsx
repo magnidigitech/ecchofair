@@ -6,7 +6,12 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-import { ChevronRight, ChevronLeft, Check, Sparkles, X, Globe } from "lucide-react";
+import {
+  ChevronRight, ChevronLeft, Check, Sparkles, X, Globe,
+  Calendar, MapPin, Trophy, CreditCard, BookOpen, GraduationCap,
+  ShieldCheck, ArrowUpRight
+} from "lucide-react";
+import Image from "next/image";
 import { incrementWhatsAppShare, submitStudentForm } from "./actions";
 import { cn, getSecurityCheck, generateWhatsAppLink } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
@@ -89,7 +94,7 @@ export default function StudentForm() {
     const securityHash = getSecurityCheck(successData.generated_id);
     const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://fair.ecchouk.co.uk").replace(/\/$/, "");
     const passportUrl = `${baseUrl}/status/${successData.generated_id}-${securityHash}`;
-    
+
     const waLink = generateWhatsAppLink({
       ...successData,
       passport_url: passportUrl
@@ -130,7 +135,7 @@ export default function StudentForm() {
             >
               Share on WhatsApp
             </a>
-            
+
             <button
               onClick={() => window.location.reload()}
               className="w-full bg-slate-900 text-white font-bold py-5 rounded-2xl hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
@@ -144,416 +149,537 @@ export default function StudentForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FBFBFD] pt-8 sm:pt-12 pb-24 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
-      <div className="w-full max-w-xl">
-        <div className="flex flex-col items-center mb-10 sm:mb-16">
-          <Logo className="mb-6 sm:mb-8" />
-          <div className="h-0.5 w-12 bg-slate-200 rounded-full mb-6 sm:mb-8" />
-          <h1 className="text-4xl font-black tracking-tight text-slate-900 text-center sm:text-5xl">
-            Education Fair
-          </h1>
-          <p className="mt-3 text-slate-400 font-medium text-center uppercase tracking-widest text-xs">
-            Student Registration Portal
-          </p>
-        </div>
+    <div className="min-h-screen bg-[#FBFBFD] pb-24 flex flex-col items-center">
+      {/* Top Announcement Bar */}
+      <div className="w-full bg-slate-900 overflow-hidden relative">
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-center gap-x-8 gap-y-2"
+        >
+          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white">
+            <Calendar size={14} className="text-primary" />
+            <span>24 April 2026</span>
+          </div>
+          <div className="w-1 h-1 bg-white/20 rounded-full hidden sm:block" />
+          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/70">
+            <MapPin size={14} className="text-primary" />
+            <span>Welcomhotel By ITC, Guntur</span>
+          </div>
+          <div className="hidden md:flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">
+            <Sparkles size={14} />
+            <span>Scholarships up to ₹10 Lakhs</span>
+          </div>
+        </motion.div>
+      </div>
 
-        {/* Progress Bar */}
-        <div className="mb-12 px-8">
-          <div className="flex justify-between relative">
-            <div className="absolute top-1/2 left-0 w-full h-[1px] bg-slate-100 -z-10 -translate-y-1/2 rounded-full"></div>
+      <div className="w-full max-w-4xl px-4 sm:px-6 lg:px-8 pt-12">
+        <div className="flex flex-col items-center mb-16">
+          <Logo className="mb-10 sm:mb-12 scale-110" />
+
+          <div className="text-center space-y-4 max-w-2xl">
             <motion.div
-              className="absolute top-1/2 left-0 h-[2px] bg-primary -z-10 -translate-y-1/2 rounded-full"
-              initial={{ width: "0%" }}
-              animate={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
-              transition={{ duration: 0.5, ease: "circOut" }}
-            />
-            {steps.map((step, idx) => (
-              <div key={step.id} className="flex flex-col items-center">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border transition-all duration-500
-                    ${currentStep >= idx ? "bg-white border-primary text-primary shadow-lg shadow-primary/10" : "bg-white border-slate-100 text-slate-300"}`}
-                >
-                  {currentStep > idx ? <Check size={20} strokeWidth={3} /> : idx + 1}
-                </div>
-                <span className={cn(
-                  "absolute mt-12 text-[10px] font-bold uppercase tracking-widest transition-all duration-500 whitespace-nowrap",
-                  currentStep >= idx ? "text-primary opacity-100" : "text-slate-300 opacity-0"
-                )}>
-                  {step.title}
-                </span>
-              </div>
-            ))}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 rounded-full text-[9px] font-black uppercase tracking-widest text-primary mb-2 shadow-sm border border-primary/10"
+            >
+              <Trophy size={12} /> Guntur's Biggest Event
+            </motion.div>
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-900 leading-[0.95]">
+              Abroad Education Fair <span className="text-primary">2026</span>
+            </h1>
+            <p className="text-sm sm:text-base text-slate-400 font-bold uppercase tracking-[0.15em]">
+              The Ultimate Launchpad For Your Global Career
+            </p>
           </div>
         </div>
 
-        {/* Form Container */}
-        <div className="bg-white rounded-3xl md:rounded-[40px] shadow-2xl shadow-slate-200/50 border border-slate-50 p-6 md:p-12 overflow-hidden relative group">
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary/50 via-primary to-primary/50 opacity-10" />
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <AnimatePresence mode="wait">
+        {/* Feature Grid - Based on Flyer */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-20">
+          {[
+            { icon: <Trophy />, title: "Scholarships", detail: "Up to ₹10 Lakhs", color: "bg-amber-50 text-amber-600 border-amber-100" },
+            { icon: <CreditCard />, title: "Loan Support", detail: "Non-Collateral Info", color: "bg-blue-50 text-blue-600 border-blue-100" },
+            { icon: <BookOpen />, title: "Free IELTS", detail: "Training & Support", color: "bg-emerald-50 text-emerald-600 border-emerald-100" },
+            { icon: <ShieldCheck />, title: "Passport", detail: "Free Application", color: "bg-indigo-50 text-indigo-600 border-indigo-100" }
+          ].map((item, i) => (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              key={item.title}
+              className={cn(
+                "p-5 rounded-[24px] border flex flex-col items-center text-center group hover:scale-[1.02] transition-all cursor-default shadow-sm",
+                item.color
+              )}
+            >
+              <div className="mb-3 opacity-80 group-hover:scale-110 transition-transform">
+                {item.icon}
+              </div>
+              <h4 className="text-[10px] font-black uppercase tracking-widest mb-1">{item.title}</h4>
+              <p className="text-[11px] font-bold opacity-70 leading-tight">{item.detail}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="max-w-xl mx-auto">
+          {/* Progress Bar */}
+          <div className="mb-12 px-8">
+            <div className="flex justify-between relative">
+              <div className="absolute top-1/2 left-0 w-full h-[1px] bg-slate-100 -z-10 -translate-y-1/2 rounded-full"></div>
               <motion.div
-                key={currentStep}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.2 }}
-              >
-                {currentStep === 0 && (
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
-                      <input
-                        {...register("name")}
-                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
-                        placeholder="Rahul Sharma"
-                      />
-                      {errors.name && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.name.message}</p>}
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
-                      <input
-                        {...register("phone")}
-                        type="tel"
-                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
-                        placeholder="9876543210"
-                      />
-                      {errors.phone && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.phone.message}</p>}
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
-                      <input
-                        {...register("email")}
-                        type="email"
-                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
-                        placeholder="rahul@example.com"
-                      />
-                      {errors.email && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.email.message}</p>}
-                    </div>
+                className="absolute top-1/2 left-0 h-[2px] bg-primary -z-10 -translate-y-1/2 rounded-full"
+                initial={{ width: "0%" }}
+                animate={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
+                transition={{ duration: 0.5, ease: "circOut" }}
+              />
+              {steps.map((step, idx) => (
+                <div key={step.id} className="flex flex-col items-center">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border transition-all duration-500
+                    ${currentStep >= idx ? "bg-white border-primary text-primary shadow-lg shadow-primary/10" : "bg-white border-slate-100 text-slate-300"}`}
+                  >
+                    {currentStep > idx ? <Check size={20} strokeWidth={3} /> : idx + 1}
                   </div>
-                )}
+                  <span className={cn(
+                    "absolute mt-12 text-[10px] font-bold uppercase tracking-widest transition-all duration-500 whitespace-nowrap",
+                    currentStep >= idx ? "text-primary opacity-100" : "text-slate-300 opacity-0"
+                  )}>
+                    {step.title}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
 
-                {currentStep === 1 && (
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">What did you study last?</label>
-                      <div className="relative">
-                        <select
-                          {...register("qualification")}
-                          className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium appearance-none"
-                        >
-                          <option value="">Select qualification</option>
-                          {QUALIFICATIONS.map(q => <option key={q} value={q}>{q}</option>)}
-                        </select>
-                        <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 rotate-90 text-slate-400 pointer-events-none" size={18} />
-                      </div>
-                      {errors.qualification && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.qualification.message}</p>}
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">College / School Name</label>
-                      <input
-                        {...register("college_name")}
-                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
-                        placeholder="Your University"
-                      />
-                      {errors.college_name && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.college_name.message}</p>}
-                    </div>
-                    <div className="grid grid-cols-2 gap-6">
+          {/* Form Container */}
+          <div className="bg-white rounded-3xl md:rounded-[40px] shadow-2xl shadow-slate-200/50 border border-slate-50 p-6 md:p-12 overflow-hidden relative group">
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary/50 via-primary to-primary/50 opacity-10" />
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentStep}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {currentStep === 0 && (
+                    <div className="space-y-4 sm:space-y-6">
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">GPA / Percentage</label>
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                         <input
-                          {...register("grad_score")}
+                          {...register("name")}
                           className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
-                          placeholder="8.5 CGPA"
+                          placeholder="Your Name"
                         />
+                        {errors.name && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.name.message}</p>}
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Backlogs</label>
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
                         <input
-                          {...register("backlogs")}
-                          type="number"
+                          {...register("phone")}
+                          type="tel"
                           className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
-                          placeholder="0"
+                          placeholder="9876543210"
                         />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">What do you want to study?</label>
-                      <input
-                        {...register("course_interest")}
-                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
-                        placeholder="e.g. MS in Data Science"
-                      />
-                      {errors.course_interest && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.course_interest.message}</p>}
-                    </div>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Work Exp</label>
-                        <input
-                          {...register("work_experience")}
-                          className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
-                          placeholder="2 Years"
-                        />
+                        {errors.phone && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.phone.message}</p>}
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">IELTS / GRE</label>
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
                         <input
-                          {...register("ielts_gre")}
+                          {...register("email")}
+                          type="email"
                           className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
-                          placeholder="7.5"
+                          placeholder="Please Enter Valid Email"
                         />
+                        {errors.email && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.email.message}</p>}
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {currentStep === 2 && (
-                  <div className="space-y-6 sm:space-y-8">
-                    <div className="space-y-3">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Countries you like</label>
-                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                        <Controller
-                          name="preferred_countries"
-                          control={control}
-                          render={({ field }) => (
-                            <>
-                              {COUNTRIES.map(country => {
-                                const isEurope = country === "Europe";
-                                const selectedEUCount = field.value.filter((v: string) => EUROPE_COUNTRIES.includes(v)).length;
-                                const isSelected = isEurope ? selectedEUCount > 0 : field.value.includes(country);
+                  {currentStep === 1 && (
+                    <div className="space-y-4 sm:space-y-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">What did you study last?</label>
+                        <div className="relative">
+                          <select
+                            {...register("qualification")}
+                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium appearance-none"
+                          >
+                            <option value="">Select qualification</option>
+                            {QUALIFICATIONS.map(q => <option key={q} value={q}>{q}</option>)}
+                          </select>
+                          <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 rotate-90 text-slate-400 pointer-events-none" size={18} />
+                        </div>
+                        {errors.qualification && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.qualification.message}</p>}
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">College / School Name</label>
+                        <input
+                          {...register("college_name")}
+                          className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
+                          placeholder="Your University"
+                        />
+                        {errors.college_name && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.college_name.message}</p>}
+                      </div>
+                      <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">GPA / Percentage</label>
+                          <input
+                            {...register("grad_score")}
+                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
+                            placeholder="8.5 CGPA"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Backlogs</label>
+                          <input
+                            {...register("backlogs")}
+                            type="number"
+                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
+                            placeholder="0"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">What do you want to study?</label>
+                        <input
+                          {...register("course_interest")}
+                          className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
+                          placeholder="e.g. MS in Data Science"
+                        />
+                        {errors.course_interest && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.course_interest.message}</p>}
+                      </div>
+                      <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Work Exp</label>
+                          <input
+                            {...register("work_experience")}
+                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
+                            placeholder="2 Years"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">IELTS / GRE</label>
+                          <input
+                            {...register("ielts_gre")}
+                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium placeholder:text-slate-300"
+                            placeholder="7.5"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
-                                return (
-                                  <div
-                                    key={country}
-                                    onClick={() => {
-                                      if (isEurope) {
-                                        setIsEuropeModalOpen(true);
-                                        return;
-                                      }
-                                      const newValue = isSelected
-                                        ? field.value.filter((v: string) => v !== country)
-                                        : [...field.value, country];
-                                      field.onChange(newValue);
-                                    }}
+                  {currentStep === 2 && (
+                    <div className="space-y-6 sm:space-y-8">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Countries you like</label>
+                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                          <Controller
+                            name="preferred_countries"
+                            control={control}
+                            render={({ field }) => (
+                              <>
+                                {COUNTRIES.map(country => {
+                                  const isEurope = country === "Europe";
+                                  const selectedEUCount = field.value.filter((v: string) => EUROPE_COUNTRIES.includes(v)).length;
+                                  const isSelected = isEurope ? selectedEUCount > 0 : field.value.includes(country);
+
+                                  return (
+                                    <div
+                                      key={country}
+                                      onClick={() => {
+                                        if (isEurope) {
+                                          setIsEuropeModalOpen(true);
+                                          return;
+                                        }
+                                        const newValue = isSelected
+                                          ? field.value.filter((v: string) => v !== country)
+                                          : [...field.value, country];
+                                        field.onChange(newValue);
+                                      }}
+                                      className={cn(
+                                        "cursor-pointer px-3 py-3 sm:py-4 rounded-2xl border text-[11px] font-bold uppercase tracking-tight text-center transition-all flex items-center justify-center select-none shadow-sm gap-2",
+                                        isSelected
+                                          ? "bg-slate-900 border-slate-900 text-white shadow-lg shadow-slate-200"
+                                          : "bg-slate-50 border-slate-100 text-slate-400 hover:border-slate-300"
+                                      )}
+                                    >
+                                      {country}
+                                      {isEurope && selectedEUCount > 0 && (
+                                        <span className="bg-primary text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+                                          {selectedEUCount}
+                                        </span>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </>
+                            )}
+                          />
+                        </div>
+                        {errors.preferred_countries && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.preferred_countries.message}</p>}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-6 pt-4 border-t border-slate-50">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Any visa rejections before?</label>
+                          <Controller
+                            name="visa_refusal"
+                            control={control}
+                            render={({ field }) => (
+                              <div className="flex gap-2">
+                                {["Yes", "No"].map(val => (
+                                  <button
+                                    key={val}
+                                    type="button"
+                                    onClick={() => field.onChange(val)}
                                     className={cn(
-                                      "cursor-pointer px-3 py-3 sm:py-4 rounded-2xl border text-[11px] font-bold uppercase tracking-tight text-center transition-all flex items-center justify-center select-none shadow-sm gap-2",
-                                      isSelected
-                                        ? "bg-slate-900 border-slate-900 text-white shadow-lg shadow-slate-200"
-                                        : "bg-slate-50 border-slate-100 text-slate-400 hover:border-slate-300"
+                                      "flex-1 py-4 rounded-2xl border text-xs font-bold transition-all",
+                                      field.value === val ? "bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-200" : "bg-slate-50 text-slate-400 border-slate-100 hover:border-slate-300"
                                     )}
                                   >
-                                    {country}
-                                    {isEurope && selectedEUCount > 0 && (
-                                      <span className="bg-primary text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
-                                        {selectedEUCount}
-                                      </span>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </>
-                          )}
-                        />
-                      </div>
-                      {errors.preferred_countries && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.preferred_countries.message}</p>}
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-6 pt-4 border-t border-slate-50">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Any visa rejections before?</label>
-                        <Controller
-                          name="visa_refusal"
-                          control={control}
-                          render={({ field }) => (
-                            <div className="flex gap-2">
-                              {["Yes", "No"].map(val => (
-                                <button
-                                  key={val}
-                                  type="button"
-                                  onClick={() => field.onChange(val)}
-                                  className={cn(
-                                    "flex-1 py-4 rounded-2xl border text-xs font-bold transition-all",
-                                    field.value === val ? "bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-200" : "bg-slate-50 text-slate-400 border-slate-100 hover:border-slate-300"
-                                  )}
-                                >
-                                  {val}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Do you have a passport?</label>
-                        <Controller
-                          name="has_passport"
-                          control={control}
-                          render={({ field }) => (
-                            <div className="flex gap-2">
-                              {["Yes", "No"].map(val => (
-                                <button
-                                  key={val}
-                                  type="button"
-                                  onClick={() => field.onChange(val)}
-                                  className={cn(
-                                    "flex-1 py-4 rounded-2xl border text-xs font-bold transition-all",
-                                    field.value === val ? "bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-200" : "bg-slate-50 text-slate-400 border-slate-100 hover:border-slate-300"
-                                  )}
-                                >
-                                  {val}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-4 border-t border-slate-50">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">When do you want to join?</label>
-                        <div className="relative">
-                          <select
-                            {...register("intake")}
-                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium appearance-none"
-                          >
-                            <option value="">Select intake</option>
-                            {INTAKES.map(i => <option key={i} value={i}>{i}</option>)}
-                          </select>
-                          <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 rotate-90 text-slate-400 pointer-events-none" size={18} />
-                        </div>
-                        {errors.intake && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.intake.message}</p>}
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">How much can you spend?</label>
-                        <div className="relative">
-                          <select
-                            {...register("budget")}
-                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium appearance-none"
-                          >
-                            <option value="">Select budget</option>
-                            {BUDGETS.map(b => <option key={b} value={b}>{b}</option>)}
-                          </select>
-                          <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 rotate-90 text-slate-400 pointer-events-none" size={18} />
-                        </div>
-                        {errors.budget && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.budget.message}</p>}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </motion.div>
-            </AnimatePresence>
-
-            <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-slate-50 flex flex-col-reverse sm:flex-row justify-between items-center gap-3 sm:gap-4">
-              {currentStep > 0 ? (
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep((prev: number) => prev - 1)}
-                  className="w-full sm:flex-1 px-6 py-3.5 sm:py-4 rounded-2xl text-slate-500 font-bold text-sm flex items-center justify-center hover:bg-slate-50 transition-colors uppercase tracking-widest"
-                >
-                  <ChevronLeft size={18} className="mr-2" /> Back
-                </button>
-              ) : <div className="hidden sm:block sm:flex-1"></div>}
-
-              {currentStep < steps.length - 1 ? (
-                <button
-                  type="button"
-                  onClick={validateStep}
-                  className="w-full sm:flex-1 px-8 py-4 rounded-2xl bg-primary text-white font-bold text-sm flex items-center justify-center shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5 uppercase tracking-widest"
-                >
-                  Continue <ChevronRight size={18} className="ml-2" />
-                </button>
-              ) : (
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full sm:flex-1 px-8 py-4 rounded-2xl bg-slate-900 text-white font-bold text-sm flex items-center justify-center shadow-xl shadow-slate-200 transition-all hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 uppercase tracking-wide sm:tracking-widest"
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center">Processing...</span>
-                  ) : (
-                    <span className="flex items-center"><Sparkles size={16} className="mr-2 text-primary" /> Finish Registration</span>
-                  )}
-                </button>
-              )}
-            </div>
-          </form>
-        </div>
-        {/* Europe Selection Modal */}
-        <AnimatePresence>
-          {isEuropeModalOpen && (
-            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xl z-[100] flex items-center justify-center p-6">
-              <Controller
-                name="preferred_countries"
-                control={control}
-                render={({ field }) => (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                    className="bg-white/90 backdrop-blur-3xl p-6 sm:p-10 rounded-[32px] sm:rounded-[48px] shadow-[0_32px_128px_rgba(0,0,0,0.1)] max-w-2xl w-full border border-white/20 relative overflow-hidden"
-                  >
-                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary via-blue-400 to-indigo-500" />
-
-                    <div className="flex justify-between items-center mb-6 sm:mb-10">
-                      <div>
-                        <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tighter flex items-center gap-3">
-                          <Globe className="text-primary" size={24} /> Global Destinations
-                        </h3>
-                        <p className="text-slate-400 font-bold text-[10px] mt-2 uppercase tracking-[0.2em]">Select your preferred destinations</p>
-                      </div>
-                      <button onClick={() => setIsEuropeModalOpen(false)} className="bg-slate-50 p-3 rounded-2xl text-slate-400 hover:text-slate-900 transition-colors shadow-inner">
-                        <X size={20} strokeWidth={3} />
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto px-1 custom-scrollbar pb-6">
-                      {EUROPE_COUNTRIES.map(c => {
-                        const isSelected = field.value.includes(c);
-                        return (
-                          <div
-                            key={c}
-                            onClick={() => {
-                              const newValue = isSelected
-                                ? field.value.filter((v: string) => v !== c)
-                                : [...field.value, c];
-                              field.onChange(newValue);
-                            }}
-                            className={cn(
-                              "cursor-pointer px-4 py-3.5 rounded-2xl border text-[10px] font-black uppercase tracking-tight text-center transition-all flex items-center justify-center select-none shadow-sm",
-                              isSelected
-                                ? "bg-slate-900 border-slate-900 text-white shadow-lg"
-                                : "bg-white border-slate-100 text-slate-400 hover:border-slate-300"
+                                    {val}
+                                  </button>
+                                ))}
+                              </div>
                             )}
-                          >
-                            {c}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Do you have a passport?</label>
+                          <Controller
+                            name="has_passport"
+                            control={control}
+                            render={({ field }) => (
+                              <div className="flex gap-2">
+                                {["Yes", "No"].map(val => (
+                                  <button
+                                    key={val}
+                                    type="button"
+                                    onClick={() => field.onChange(val)}
+                                    className={cn(
+                                      "flex-1 py-4 rounded-2xl border text-xs font-bold transition-all",
+                                      field.value === val ? "bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-200" : "bg-slate-50 text-slate-400 border-slate-100 hover:border-slate-300"
+                                    )}
+                                  >
+                                    {val}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 pt-4 border-t border-slate-50">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">When do you want to join?</label>
+                          <div className="relative">
+                            <select
+                              {...register("intake")}
+                              className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium appearance-none"
+                            >
+                              <option value="">Select intake</option>
+                              {INTAKES.map(i => <option key={i} value={i}>{i}</option>)}
+                            </select>
+                            <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 rotate-90 text-slate-400 pointer-events-none" size={18} />
                           </div>
-                        );
-                      })}
+                          {errors.intake && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.intake.message}</p>}
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">How much can you spend?</label>
+                          <div className="relative">
+                            <select
+                              {...register("budget")}
+                              className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium appearance-none"
+                            >
+                              <option value="">Select budget</option>
+                              {BUDGETS.map(b => <option key={b} value={b}>{b}</option>)}
+                            </select>
+                            <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 rotate-90 text-slate-400 pointer-events-none" size={18} />
+                          </div>
+                          {errors.budget && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wide ml-1 mt-1">{errors.budget.message}</p>}
+                        </div>
+                      </div>
                     </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
 
-                    <div className="mt-10 pt-8 border-t border-slate-100 flex justify-between items-center">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-relaxed">
-                        {field.value.filter((v: string) => EUROPE_COUNTRIES.includes(v)).length} Selections Active
-                      </p>
-                      <button
-                        onClick={() => setIsEuropeModalOpen(false)}
-                        className="px-8 py-4 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-2xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95"
-                      >
-                        Confirm Choices
-                      </button>
-                    </div>
-                  </motion.div>
+              <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-slate-50 flex flex-col-reverse sm:flex-row justify-between items-center gap-3 sm:gap-4">
+                {currentStep > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep((prev: number) => prev - 1)}
+                    className="w-full sm:flex-1 px-6 py-3.5 sm:py-4 rounded-2xl text-slate-500 font-bold text-sm flex items-center justify-center hover:bg-slate-50 transition-colors uppercase tracking-widest"
+                  >
+                    <ChevronLeft size={18} className="mr-2" /> Back
+                  </button>
+                ) : <div className="hidden sm:block sm:flex-1"></div>}
+
+                {currentStep < steps.length - 1 ? (
+                  <button
+                    type="button"
+                    onClick={validateStep}
+                    className="w-full sm:flex-1 px-8 py-4 rounded-2xl bg-primary text-white font-bold text-sm flex items-center justify-center shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5 uppercase tracking-widest"
+                  >
+                    Continue <ChevronRight size={18} className="ml-2" />
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full sm:flex-1 px-8 py-4 rounded-2xl bg-slate-900 text-white font-bold text-sm flex items-center justify-center shadow-xl shadow-slate-200 transition-all hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 uppercase tracking-wide sm:tracking-widest"
+                  >
+                    {isSubmitting ? (
+                      <span className="flex items-center">Processing...</span>
+                    ) : (
+                      <span className="flex items-center"><Sparkles size={16} className="mr-2 text-primary" /> Finish Registration</span>
+                    )}
+                  </button>
                 )}
-              />
-            </div>
-          )}
-        </AnimatePresence>
+              </div>
+            </form>
+          </div>
+          {/* Europe Selection Modal */}
+          <AnimatePresence>
+            {isEuropeModalOpen && (
+              <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xl z-[100] flex items-center justify-center p-6">
+                <Controller
+                  name="preferred_countries"
+                  control={control}
+                  render={({ field }) => (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                      className="bg-white/90 backdrop-blur-3xl p-6 sm:p-10 rounded-[32px] sm:rounded-[48px] shadow-[0_32px_128px_rgba(0,0,0,0.1)] max-w-2xl w-full border border-white/20 relative overflow-hidden"
+                    >
+                      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary via-blue-400 to-indigo-500" />
 
-        <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #f1f5f9; border-radius: 10px; }
-      `}</style>
+                      <div className="flex justify-between items-center mb-6 sm:mb-10">
+                        <div>
+                          <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tighter flex items-center gap-3">
+                            <Globe className="text-primary" size={24} /> Global Destinations
+                          </h3>
+                          <p className="text-slate-400 font-bold text-[10px] mt-2 uppercase tracking-[0.2em]">Select your preferred destinations</p>
+                        </div>
+                        <button onClick={() => setIsEuropeModalOpen(false)} className="bg-slate-50 p-3 rounded-2xl text-slate-400 hover:text-slate-900 transition-colors shadow-inner">
+                          <X size={20} strokeWidth={3} />
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto px-1 custom-scrollbar pb-6">
+                        {EUROPE_COUNTRIES.map(c => {
+                          const isSelected = field.value.includes(c);
+                          return (
+                            <div
+                              key={c}
+                              onClick={() => {
+                                const newValue = isSelected
+                                  ? field.value.filter((v: string) => v !== c)
+                                  : [...field.value, c];
+                                field.onChange(newValue);
+                              }}
+                              className={cn(
+                                "cursor-pointer px-4 py-3.5 rounded-2xl border text-[10px] font-black uppercase tracking-tight text-center transition-all flex items-center justify-center select-none shadow-sm",
+                                isSelected
+                                  ? "bg-slate-900 border-slate-900 text-white shadow-lg"
+                                  : "bg-white border-slate-100 text-slate-400 hover:border-slate-300"
+                              )}
+                            >
+                              {c}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="mt-10 pt-8 border-t border-slate-100 flex justify-between items-center">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-relaxed">
+                          {field.value.filter((v: string) => EUROPE_COUNTRIES.includes(v)).length} Selections Active
+                        </p>
+                        <button
+                          onClick={() => setIsEuropeModalOpen(false)}
+                          className="px-8 py-4 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-2xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95"
+                        >
+                          Confirm Choices
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                />
+              </div>
+            )}
+          </AnimatePresence>
+
+          {/* Study Destinations - From Flyer */}
+          <div className="mt-16 text-center space-y-8">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Explore Top Study Destinations</p>
+            <div className="grid grid-cols-3 sm:flex sm:flex-wrap justify-center gap-y-10 gap-x-4 sm:gap-x-10 opacity-70 hover:opacity-100 transition-opacity duration-700">
+              {[
+                { id: "UK", src: "/images/UK.png" },
+                { id: "USA", src: "/images/USA.png" },
+                { id: "Ireland", src: "/images/Ireland.png" },
+                { id: "Europe", src: "/images/Europe.png" },
+                { id: "Canada", src: "/images/Canada.png" },
+                { id: "Australia", src: "/images/Australia.png" }
+              ].map((c: { id: string; src?: string; icon?: any }) => (
+                <div key={c.id} className="flex flex-col items-center gap-3 group">
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center border border-slate-100 shadow-sm group-hover:shadow-md group-hover:-translate-y-1 transition-all duration-300 overflow-hidden relative">
+                    {c.src ? (
+                      <Image
+                        src={c.src}
+                        alt={c.id}
+                        fill
+                        className="object-contain p-2 group-hover:scale-110 transition-transform"
+                      />
+                    ) : (
+                      <div className="text-slate-400 group-hover:text-primary transition-colors">
+                        {c.icon}
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 group-hover:text-slate-600 transition-colors">{c.id}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Financial Partners Row - From Flyer */}
+          <div className="mt-20 pt-10 border-t border-slate-50 text-center">
+            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-10 opacity-50">Educational Loan Partners</p>
+            <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-8 px-4">
+              {[
+                { id: "avanse", src: "/images/avanse.png" },
+                { id: "credila", src: "/images/credila.png" },
+                { id: "incred", src: "/images/incred.png" },
+                { id: "unionbank", src: "/images/unionbank.png" }
+              ].map(bank => (
+                <div
+                  key={bank.id}
+                  className="h-10 w-32 relative opacity-90 hover:opacity-100 transition-all duration-500 cursor-default"
+                >
+                  <Image
+                    src={bank.src}
+                    alt={bank.id}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="mt-8 text-[9px] font-bold text-slate-400 italic">Non-Collateral Education Loans Available*</p>
+          </div>
+
+          <style dangerouslySetInnerHTML={{
+            __html: `
+          .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+          .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+          .custom-scrollbar::-webkit-scrollbar-thumb { background: #f1f5f9; border-radius: 10px; }
+        ` }} />
+        </div>
       </div>
     </div>
   );

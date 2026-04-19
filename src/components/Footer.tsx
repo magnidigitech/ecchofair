@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export function Footer({ className }: { className?: string }) {
   const pathname = usePathname();
