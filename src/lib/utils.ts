@@ -35,17 +35,17 @@ export function generateWhatsAppLink(data: WhatsAppData) {
     ? data.preferred_countries.join(", ")
     : data.preferred_countries;
 
-  const message = `Hi *${data.name}*,
+  const message = `Hi *${data.name.trim()}*,
 
 Thank you for registering with Eccho Overseas.
 
-We have received your details for *${data.course_interest}* in *${countries}* for *${data.intake}* intake.
+We have received your details for *${data.course_interest.trim()}* in *${countries.trim()}* for *${data.intake.trim()}* intake.
 
 Our expert counselor will contact you shortly.
 
-Your Profile ID: *${data.generated_id}*
+Your Profile ID: *${data.generated_id.trim()}*
 
-You can track your application here: *${data.passport_url}*
+You can track your application here: ${data.passport_url.trim()}
 
 For urgent queries, reply to this message.
 
