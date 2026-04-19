@@ -26,7 +26,7 @@ export function AdminNav({ profile }: AdminNavProps) {
   const navLinks = [
     { href: "/admin", label: "Reports", icon: BarChart3 },
     { href: "/counselor", label: "Students Queue", icon: Users },
-    { href: "#", label: "Settings", icon: Settings },
+    { href: "/admin/settings", label: "Settings", icon: Settings },
   ];
 
   const sidebarVariants = {
@@ -45,18 +45,18 @@ export function AdminNav({ profile }: AdminNavProps) {
         className="bg-white border-r border-slate-100 hidden lg:flex flex-col sticky top-0 h-screen z-[100] transition-shadow duration-300"
         style={{ boxShadow: isHovered ? '0 20px 25px -5px rgb(0 0 0 / 0.1)' : 'none' }}
       >
-        <div className="p-6 h-24 flex items-center justify-center overflow-hidden">
+        <div className="py-8 flex items-center justify-center overflow-hidden border-b border-slate-50 mb-4">
           <AnimatePresence mode="wait">
             {isHovered ? (
               <motion.div
                 key="full-logo"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
                 className="flex flex-col items-center"
               >
                 <Logo className="scale-75" />
-                <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em] mt-2 whitespace-nowrap">Admin Center</p>
+                <p className="text-[9px] text-slate-400 font-extrabold uppercase tracking-[0.25em] mt-2 whitespace-nowrap">Admin Terminal</p>
               </motion.div>
             ) : (
               <motion.div
@@ -64,15 +64,15 @@ export function AdminNav({ profile }: AdminNavProps) {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg"
+                className="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center bg-white shadow-sm border border-slate-100 p-2.5 transition-transform hover:scale-105 cursor-pointer"
               >
-                E
+                <img src="/favicon.png" alt="Eccho" className="w-full h-full object-contain" />
               </motion.div>
             )}
           </AnimatePresence>
         </div>
         
-        <nav className="flex-1 px-3 space-y-2 mt-4">
+        <nav className="flex-1 px-3 space-y-4 mt-8 flex flex-col items-center">
           {navLinks.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
@@ -81,30 +81,32 @@ export function AdminNav({ profile }: AdminNavProps) {
                 key={link.label}
                 href={link.href} 
                 className={cn(
-                  "flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 font-bold text-[11px] uppercase tracking-widest relative group",
+                  "flex items-center rounded-2xl transition-all duration-300 relative group",
+                  isHovered ? "w-full px-4 py-4" : "w-14 h-14 justify-center",
                   isActive 
-                    ? "bg-slate-900 text-white shadow-xl shadow-slate-200" 
+                    ? "bg-white text-slate-900 border border-slate-100 shadow-[0_10px_40px_-10px_rgba(22,163,74,0.15)]" 
                     : "text-slate-400 hover:bg-slate-50 hover:text-slate-900"
                 )}
               >
-                <Icon size={18} className={cn("", isActive ? "text-primary" : "group-hover:scale-110 transition-transform")} />
+                <Icon size={isHovered ? 18 : 22} className={cn("transition-all duration-300", isActive ? "text-primary scale-110" : "group-hover:text-slate-900")} />
                 <AnimatePresence>
                   {isHovered && (
                     <motion.span
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -10 }}
-                      className="ml-4 whitespace-nowrap"
+                      className="ml-4 whitespace-nowrap text-[11px] font-black uppercase tracking-widest"
                     >
                       {link.label}
                     </motion.span>
                   )}
                 </AnimatePresence>
-                {!isHovered && isActive && (
-                  <motion.div 
-                    layoutId="active-dot"
-                    className="absolute -left-1 w-1 h-6 bg-primary rounded-r-full"
-                  />
+                
+                {/* Visual Indicators */}
+                {!isHovered && (
+                  <div className="absolute left-full ml-4 px-3 py-2 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-[110] whitespace-nowrap shadow-xl">
+                    {link.label}
+                  </div>
                 )}
               </Link>
             );

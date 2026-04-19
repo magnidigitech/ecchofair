@@ -119,7 +119,7 @@ export async function submitStudentForm(data: any) {
       console.warn("Webhook not triggered: No ZAPIER_WEBHOOK_URL found in Env or Settings table.");
     }
 
-    return { success: true, generated_id };
+    return { success: true, generated_id, id: student.id };
   } catch (error: any) {
     console.error("Action Error:", error);
     return { success: false, error: error.message || "An unexpected error occurred." };
@@ -199,5 +199,30 @@ export async function triggerStatusWebhook(leadId: string, eventType: string = "
   } catch (err: any) {
     console.error("Status Webhook Error:", err);
     return { success: false, error: err.message };
+  }
+}
+
+export async function incrementWhatsAppShare(studentId: string) {
+  try {
+    const { error } = await supabase.rpc('increment_whatsapp_share', { student_row_id: studentId });
+    
+    // If RPC doesn't exist, fallback to manual update
+    if (error) {
+      const { data: current } = await supabase
+        .from("students")
+        .select("whatsapp_share_count")
+        .eq("id", studentId)
+        .single();
+        
+      await supabase
+        .from("students")
+        .update({ whatsapp_share_count: (current?.whatsapp_share_count || 0) + 1 })
+        .eq("id", studentId);
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Increment Share Error:", error);
+    return { success: false };
   }
 }

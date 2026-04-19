@@ -1,9 +1,14 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 
 export function Footer({ className }: { className?: string }) {
+  const pathname = usePathname();
+  const isDashboard = pathname?.startsWith("/counselor") || pathname?.startsWith("/admin");
+
+  if (isDashboard) return null;
+
   return (
     <footer className={cn("py-8 border-t border-border/40 bg-background/50 backdrop-blur-sm", className)}>
       <div className="container mx-auto px-4 flex flex-col items-center gap-4">

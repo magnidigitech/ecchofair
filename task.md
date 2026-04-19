@@ -32,9 +32,20 @@
   - `[x]` Implement security hashing for status URLs.
   - `[x]` Add QR Pass generation in Counselor Dashboard.
   - `[x]` Enable Search/Verify landing page at `/status`.
+  - `[x]` Robust Print Layout Fix
+    - `[x]` Update `globals.css` with comprehensive print overrides
+    - `[x]` Apply `no-print` classes to the Sidebar in `counselor/page.tsx`
+    - `[x]` Flatten the flex container structure for print in `counselor/page.tsx`
+    - `[x]` Resolve duplicate print pages by conditionalizing the print brief
+    - `[x]` Verify print preview with the user
+  - `[x]` Counselor Dashboard Refinement
+    - `[x]` WhatsApp share tracking & count display (`counselor/page.tsx`)
+    - `[x]` Show sidebar for Admin users in counselor view (`counselor/layout.tsx`)
+    - `[x]` Redesign Student Detail Workspace (Pro/Minimalist UI)
+        - `[x]` Header & Action Buttons Refinement
+        - `[x]` Status Selector Overhaul
+        - `[x]` Academic Details Grid Clean-up
 
-- `[/]` **Phase 15: Admin Live Fair Analytics**
-  - `[ ]` Implement Hourly Traffic SVG visualization.
   - `[ ]` Build "Desk Load" heatmap grid.
   - `[ ]` Add Real-time status breakdown (New vs Warm vs Hot).
   - `[ ]` Enhance Admin UI with sapphire/slate theme.

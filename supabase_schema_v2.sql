@@ -11,7 +11,8 @@ DROP TABLE IF EXISTS public.student_countries;
 ALTER TABLE public.students 
 DROP COLUMN IF EXISTS status,
 DROP COLUMN IF EXISTS is_highly_interested,
-DROP COLUMN IF EXISTS notes;
+DROP COLUMN IF EXISTS notes,
+ADD COLUMN IF NOT EXISTS whatsapp_share_count INTEGER DEFAULT 0;
 
 -- 3. Create the multi-country tracking table
 CREATE TABLE public.student_countries (

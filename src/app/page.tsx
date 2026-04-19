@@ -5,8 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useRouter } from "next/navigation";
 import { ChevronRight, ChevronLeft, Check, Sparkles, X, Globe } from "lucide-react";
-import { submitStudentForm } from "./actions";
+import { incrementWhatsAppShare, submitStudentForm } from "./actions";
 import { cn, getSecurityCheck, generateWhatsAppLink } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
 
@@ -39,14 +40,10 @@ const steps = [
 const QUALIFICATIONS = ["High School / 12th", "Diploma", "Bachelors", "Masters", "Ph.D"];
 const INTAKES = ["Fall 2026", "Spring 2027", "Fall 2027"];
 const BUDGETS = ["10 to 15 Lakhs", "15 to 20 Lakhs", "20 to 25 Lakhs", "Above 25 Lakhs"];
-const COUNTRIES = ["USA", "UK", "Australia", "Canada", "Ireland", "New Zealand", "Europe"];
-const EUROPE_COUNTRIES = [
-  "Austria", "Cyprus", "Denmark", "Dubai", "Finland", "France", "Germany", "Greece",
-  "Hungary", "Italy", "Latvia", "Lithuania", "Malaysia", "Malta", "Mauritius",
-  "Netherland", "Poland", "Singapore", "Spain", "Sweden", "Switzerland"
-];
+import { COUNTRIES, EUROPE_COUNTRIES } from "@/lib/constants";
 
 export default function StudentForm() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<any | null>(null);
@@ -80,7 +77,7 @@ export default function StudentForm() {
     const result = await submitStudentForm(data);
 
     if (result.success && result.generated_id) {
-      setSuccessData({ ...data, generated_id: result.generated_id });
+      setSuccessData({ ...data, id: result.id, generated_id: result.generated_id });
     } else {
       alert("Error submitting form: " + result.error);
     }
@@ -120,6 +117,12 @@ export default function StudentForm() {
 
           <div className="space-y-4">
             <a
+              onClick={async () => {
+                if (successData.id) {
+                  await incrementWhatsAppShare(successData.id);
+                  router.refresh();
+                }
+              }}
               href={waLink}
               target="_blank"
               rel="noopener noreferrer"

@@ -97,3 +97,47 @@ body {
 @keyframes shimmer {
   100% { transform: translateX(100%); }
 }
+
+@media print {
+  /* Basic hiding utility */
+  .no-print {
+    display: none !important;
+  }
+  
+  /* Reset the entire body for print */
+  body, html, main, #__next, .flex-1, .flex, .min-h-screen {
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Target the main workspace parents */
+  .custom-scrollbar, [class*="overflow-y-auto"] {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  .print-area {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    display: block !important;
+  }
+
+  /* Avoid page breaks inside logical blocks */
+  .grid, .space-y-6, .mb-20 {
+    page-break-inside: avoid;
+  }
+
+  .print-branding-footer {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+  }
+}

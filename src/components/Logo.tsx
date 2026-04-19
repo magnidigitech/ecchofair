@@ -11,7 +11,7 @@ export function Logo({ className, noLink = false }: { className?: string, noLink
         src="/images/logo.png"
         alt="Eccho Overseas Logo"
         fill
-        className="object-contain"
+        className="object-contain object-left"
         priority
       />
     </div>

@@ -11,6 +11,9 @@ export const metadata = {
   title: "Counselor Dashboard",
 };
 
+import { AdminProvider } from "@/context/AdminContext";
+import { AdminNav } from "@/components/admin/AdminNav";
+
 export default async function CounselorLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -27,10 +30,27 @@ export default async function CounselorLayout({ children }: { children: ReactNod
 
   const assignedCountries = profile?.assigned_countries || [];
 
+  if (profile?.role === 'admin') {
+     return (
+       <AdminProvider>
+         <div className="min-h-screen bg-[#FBFBFD] flex flex-col lg:flex-row">
+           <div className="no-print">
+             <AdminNav profile={profile} />
+           </div>
+           <main className="flex-1 flex flex-col min-h-screen lg:h-screen lg:overflow-hidden pt-20 lg:pt-0">
+             <div className="flex-1 flex flex-col overflow-hidden">
+               {children}
+             </div>
+           </main>
+         </div>
+       </AdminProvider>
+     );
+  }
+
   return (
     <div className="min-h-screen bg-secondary/10 flex flex-col">
       {/* Top Navigation */}
-      <header className="h-16 bg-background border-b border-border flex items-center px-6 justify-between sticky top-0 z-50 shadow-sm">
+      <header className="h-16 bg-background border-b border-border flex items-center px-6 justify-between sticky top-0 z-50 shadow-sm no-print">
         <div className="flex items-center gap-8">
           <Link href="/counselor" className="flex items-center gap-2">
             <Logo className="scale-[0.85] origin-left" noLink />

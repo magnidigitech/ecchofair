@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Download } from "lucide-react";
+import { useRouter } from "next/navigation";
 import * as XLSX from "xlsx";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
@@ -11,8 +12,10 @@ import { cn } from "@/lib/utils";
 import { useAdmin } from "@/context/AdminContext";
 import { Mail, Phone, GraduationCap, MapPin, Clock, User, ChevronRight, MessageSquare } from "lucide-react";
 import { getSecurityCheck, generateWhatsAppLink } from "@/lib/utils";
+import { incrementWhatsAppShare } from "@/app/actions";
 
 export default function AdminDashboard() {
+  const router = useRouter();
   const [students, setStudents] = useState<Student[]>([]);
   const [counselors, setCounselors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,13 +63,6 @@ export default function AdminDashboard() {
     setOnDownload(() => handleExport);
   }, [students, counselors]);
 
-  useEffect(() => {
-    const countryEntries = Object.entries(metrics.countryStats).sort((a,b) => b[1]-a[1]);
-    if (!activeCountry && countryEntries.length > 0) {
-      setActiveCountry(countryEntries[0][0]);
-    }
-  }, [metrics.countryStats]);
-
   const metrics = useMemo(() => {
     const total = students.length;
     const allProfiles = students.flatMap(s => (s as any).student_countries as StudentCountry[] || []);
@@ -106,6 +102,13 @@ export default function AdminDashboard() {
 
     return { total, hotCount, countryStats, hourlyVelocity, staffEfficiency };
   }, [students, counselors]);
+
+  useEffect(() => {
+    const countryEntries = Object.entries(metrics.countryStats).sort((a,b) => b[1]-a[1]);
+    if (!activeCountry && countryEntries.length > 0) {
+      setActiveCountry(countryEntries[0][0]);
+    }
+  }, [metrics.countryStats]);
 
   const handleExport = () => {
     const exportData = students.flatMap(s => {
@@ -322,23 +325,35 @@ export default function AdminDashboard() {
                            <p className="text-sm font-black text-slate-900 tracking-tight">{s.name}</p>
                            <p className="text-[10px] text-slate-400 font-bold mt-1 tracking-tight uppercase">{s.email}</p>
                          </div>
-                         <a 
-                           href={generateWhatsAppLink({
-                             name: s.name,
-                             phone: s.phone,
-                             course_interest: s.course_interest,
-                             preferred_countries: (s as any).student_countries?.map((p: any) => p.country_name) || [],
-                             intake: s.intake,
-                             generated_id: s.generated_id,
-                             passport_url: `${(process.env.NEXT_PUBLIC_SITE_URL || "https://fair.ecchouk.co.uk").replace(/\/$/, "")}/status/${s.generated_id}-${getSecurityCheck(s.generated_id)}`
-                           })}
-                           target="_blank"
-                           rel="noopener noreferrer"
-                           className="p-2 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                           title="WhatsApp Share"
-                         >
-                           <MessageSquare size={16} strokeWidth={3} />
-                         </a>
+                         <div className="flex items-center gap-2">
+                           <a 
+                             onClick={async () => {
+                               await incrementWhatsAppShare(s.id);
+                               fetchStudents();
+                               router.refresh();
+                             }}
+                             href={generateWhatsAppLink({
+                               name: s.name,
+                               phone: s.phone,
+                               course_interest: s.course_interest,
+                               preferred_countries: (s as any).student_countries?.map((p: any) => p.country_name) || [],
+                               intake: s.intake,
+                               generated_id: s.generated_id,
+                               passport_url: `${(process.env.NEXT_PUBLIC_SITE_URL || "https://fair.ecchouk.co.uk").replace(/\/$/, "")}/status/${s.generated_id}-${getSecurityCheck(s.generated_id)}`
+                             })}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="p-2 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-all relative flex items-center"
+                             title="WhatsApp Share"
+                           >
+                             <MessageSquare size={16} strokeWidth={3} />
+                             {((s as any).whatsapp_share_count || 0) > 0 && (
+                               <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-[7px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center border-2 border-white">
+                                 {(s as any).whatsapp_share_count}
+                               </span>
+                             )}
+                           </a>
+                         </div>
                        </div>
                     </td>
                     <td className="py-10 px-12">
@@ -419,6 +434,11 @@ function StudentCard({ student, counselors }: { student: Student, counselors: an
         <h4 className="text-base font-black text-slate-900 tracking-tight truncate mr-4">{student.name}</h4>
         <div className="flex items-center gap-2">
            <a 
+             onClick={async () => {
+               await incrementWhatsAppShare(student.id);
+               fetchStudents();
+               router.refresh();
+             }}
              href={generateWhatsAppLink({
                name: student.name,
                phone: student.phone,
@@ -430,9 +450,14 @@ function StudentCard({ student, counselors }: { student: Student, counselors: an
              })}
              target="_blank"
              rel="noopener noreferrer"
-             className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"
+             className="p-2 bg-emerald-50 text-emerald-600 rounded-lg relative flex items-center"
            >
              <MessageSquare size={14} strokeWidth={3} />
+             {((student as any).whatsapp_share_count || 0) > 0 && (
+                <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-[7px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center border-2 border-white">
+                  {(student as any).whatsapp_share_count}
+                </span>
+             )}
            </a>
            <span className="shrink-0 text-[10px] bg-slate-900 text-white px-3 py-1.5 rounded-xl font-black tracking-widest shadow-lg shadow-slate-200">
              {student.generated_id}

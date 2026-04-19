@@ -33,6 +33,7 @@ export interface Student {
   work_experience: string;
   visa_refusal: boolean;
   has_passport: boolean;
+  whatsapp_share_count: number;
   created_at: string;
   
   student_countries?: StudentCountry[]; 
