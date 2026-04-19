@@ -14,3 +14,44 @@ export function getSecurityCheck(id: string) {
   }
   return Math.abs(hash).toString(16).toUpperCase().slice(-4);
 }
+export function formatPhoneNumber(phone: string) {
+  if (phone.startsWith("+")) return phone;
+  if (phone.length === 10) return `+91${phone}`;
+  return phone;
+}
+
+interface WhatsAppData {
+  name: string;
+  phone: string;
+  course_interest: string;
+  preferred_countries: string | string[];
+  intake: string;
+  generated_id: string;
+  passport_url: string;
+}
+
+export function generateWhatsAppLink(data: WhatsAppData) {
+  const countries = Array.isArray(data.preferred_countries)
+    ? data.preferred_countries.join(", ")
+    : data.preferred_countries;
+
+  const message = `Hi *${data.name}*,
+
+Thank you for registering with Eccho Overseas.
+
+We have received your details for *${data.course_interest}* in *${countries}* for *${data.intake}* intake.
+
+Our expert counselor will contact you shortly.
+
+Your Profile ID: *${data.generated_id}*
+
+You can track your application here: *${data.passport_url}*
+
+For urgent queries, reply to this message.
+
+Regards,
+Eccho Overseas Team`;
+
+  const formattedPhone = formatPhoneNumber(data.phone).replace(/\+/g, "");
+  return `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+}

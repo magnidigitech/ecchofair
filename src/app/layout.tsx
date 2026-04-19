@@ -13,7 +13,33 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Eccho Overseas - Study Abroad Fair",
-  description: "High-performance lead capture and counseling management platform.",
+  description: "Join India's leading international education fair. Meet top universities and get on-spot admissions.",
+  icons: {
+    icon: "/favicon.png?v=2",
+    apple: "/favicon.png?v=2",
+  },
+  openGraph: {
+    title: "Eccho Overseas - Study Abroad Fair",
+    description: "Join India's leading international education fair. Meet top universities and get on-spot admissions.",
+    url: "https://fair.ecchouk.co.uk",
+    siteName: "Eccho Overseas",
+    images: [
+      {
+        url: "/flyer.png?v=2",
+        width: 1200,
+        height: 630,
+        alt: "Eccho Overseas Study Abroad Fair Flyer",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Eccho Overseas - Study Abroad Fair",
+    description: "Join India's leading international education fair.",
+    images: ["/flyer.png?v=2"],
+  },
   manifest: "/manifest.json",
 };
 

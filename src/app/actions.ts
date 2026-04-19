@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@supabase/supabase-js";
-import { getSecurityCheck } from "@/lib/utils";
+import { getSecurityCheck, formatPhoneNumber } from "@/lib/utils";
 
 // Initialize a server-only Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -77,7 +77,7 @@ export async function submitStudentForm(data: any) {
     if (webhookUrl) {
       const securityHash = getSecurityCheck(generated_id);
       // Sanitize baseUrl (remove trailing slash)
-      let baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+      let baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://fair.ecchouk.co.uk";
       baseUrl = baseUrl.replace(/\/$/, ""); 
       const passportUrl = `${baseUrl}/status/${generated_id}-${securityHash}`;
 
@@ -91,6 +91,7 @@ export async function submitStudentForm(data: any) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             ...student,
+            phone: formatPhoneNumber(student.phone),
             tracking_countries: data.preferred_countries,
             passport_url: passportUrl,
             site_url: baseUrl,
@@ -158,7 +159,7 @@ export async function triggerStatusWebhook(leadId: string, eventType: string = "
     // 3. Prepare Payload
     const student = lead.students;
     const securityHash = getSecurityCheck(student.generated_id);
-    let baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    let baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://fair.ecchouk.co.uk";
     baseUrl = baseUrl.replace(/\/$/, ""); 
     const passportUrl = `${baseUrl}/status/${student.generated_id}-${securityHash}`;
 
@@ -172,6 +173,7 @@ export async function triggerStatusWebhook(leadId: string, eventType: string = "
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...student,
+        phone: formatPhoneNumber(student.phone),
         lead_id: lead.id,
         country_name: lead.country_name,
         current_status: lead.status,

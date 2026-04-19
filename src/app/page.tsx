@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { ChevronRight, ChevronLeft, Check, Sparkles, X, Globe } from "lucide-react";
 import { submitStudentForm } from "./actions";
-import { cn } from "@/lib/utils";
+import { cn, getSecurityCheck, generateWhatsAppLink } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
 
 const formSchema = z.object({
@@ -49,7 +49,7 @@ const EUROPE_COUNTRIES = [
 export default function StudentForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successId, setSuccessId] = useState<string | null>(null);
+  const [successData, setSuccessData] = useState<any | null>(null);
   const [isEuropeModalOpen, setIsEuropeModalOpen] = useState(false);
 
   const { control, register, handleSubmit, trigger, formState: { errors }, watch } = useForm<FormData>({
@@ -80,7 +80,7 @@ export default function StudentForm() {
     const result = await submitStudentForm(data);
 
     if (result.success && result.generated_id) {
-      setSuccessId(result.generated_id);
+      setSuccessData({ ...data, generated_id: result.generated_id });
     } else {
       alert("Error submitting form: " + result.error);
     }
@@ -88,14 +88,23 @@ export default function StudentForm() {
     setIsSubmitting(false);
   };
 
-  if (successId) {
+  if (successData) {
+    const securityHash = getSecurityCheck(successData.generated_id);
+    const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://fair.ecchouk.co.uk").replace(/\/$/, "");
+    const passportUrl = `${baseUrl}/status/${successData.generated_id}-${securityHash}`;
+    
+    const waLink = generateWhatsAppLink({
+      ...successData,
+      passport_url: passportUrl
+    });
+
     return (
       <div className="min-h-screen bg-[#FBFBFD] flex flex-col items-center justify-center p-6 sm:p-12">
         <Logo className="mb-12 scale-110" />
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white max-w-md w-full rounded-[40px] shadow-2xl shadow-slate-200/50 p-6 sm:p-10 text-center border border-slate-100"
+          className="bg-white max-w-md w-full rounded-3xl md:rounded-[40px] shadow-2xl shadow-slate-200/50 p-6 sm:p-10 text-center border border-slate-100"
         >
           <div className="mx-auto w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mb-8 shadow-inner">
             <Check size={40} strokeWidth={3} />
@@ -106,15 +115,26 @@ export default function StudentForm() {
           <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 sm:p-8 mb-8 sm:mb-10 relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Your Journey ID</p>
-            <p className="text-4xl font-black tracking-tighter text-primary">{successId}</p>
+            <p className="text-4xl font-black tracking-tighter text-primary">{successData.generated_id}</p>
           </div>
 
-          <button
-            onClick={() => window.location.reload()}
-            className="w-full bg-slate-900 text-white font-bold py-5 rounded-2xl hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
-          >
-            Register Another Student
-          </button>
+          <div className="space-y-4">
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full bg-emerald-500 text-white font-bold py-5 rounded-2xl hover:bg-emerald-600 transition-all shadow-xl shadow-emerald-100 flex items-center justify-center gap-2"
+            >
+              Share on WhatsApp
+            </a>
+            
+            <button
+              onClick={() => window.location.reload()}
+              className="w-full bg-slate-900 text-white font-bold py-5 rounded-2xl hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
+            >
+              Register Another Student
+            </button>
+          </div>
         </motion.div>
       </div>
     );
@@ -164,7 +184,7 @@ export default function StudentForm() {
         </div>
 
         {/* Form Container */}
-        <div className="bg-white rounded-[40px] shadow-2xl shadow-slate-200/50 border border-slate-50 p-5 sm:p-12 overflow-hidden relative group">
+        <div className="bg-white rounded-3xl md:rounded-[40px] shadow-2xl shadow-slate-200/50 border border-slate-50 p-6 md:p-12 overflow-hidden relative group">
           <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary/50 via-primary to-primary/50 opacity-10" />
           <form onSubmit={handleSubmit(onSubmit)}>
             <AnimatePresence mode="wait">

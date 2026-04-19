@@ -73,3 +73,4 @@ BEGIN
         ALTER PUBLICATION supabase_realtime ADD TABLE public.student_countries;
     END IF;
 END $$;
+ 

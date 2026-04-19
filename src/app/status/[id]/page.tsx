@@ -70,22 +70,22 @@ export default function StudentStatusPage() {
           .contains("assigned_countries", [lead.country_name]);
 
         if (lead.status !== 'New') return { ...lead, queuePosition: 0, waitTime: 0, onlineCounselors: onlineCount || 0 };
-        
+
         const { count } = await supabase
           .from("student_countries")
           .select("*", { count: 'exact', head: true })
           .eq("country_name", lead.country_name)
           .eq("status", "New")
           .lt("created_at", lead.created_at);
-        
+
         const position = (count || 0) + 1;
         const activeStaff = onlineCount || 0;
-        
+
         return {
           ...lead,
           queuePosition: position,
           onlineCounselors: activeStaff,
-          waitTime: activeStaff > 0 ? Math.ceil((position * 10) / activeStaff) : position * 10 
+          waitTime: activeStaff > 0 ? Math.ceil((position * 10) / activeStaff) : position * 10
         };
       }));
 
@@ -152,15 +152,29 @@ export default function StudentStatusPage() {
         <div className="md:hidden w-8" />
       </nav>
 
-      <main className="max-w-4xl mx-auto px-6 py-12 md:py-24">
+      <main className="max-w-4xl mx-auto px-6 py-6 md:py-16">
+        {/* Flyer Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full h-32 md:h-64 rounded-3xl md:rounded-[40px] overflow-hidden mb-8 md:mb-16 relative group shadow-2xl shadow-slate-200"
+        >
+          <img
+            src="/flyer.png?v=2"
+            alt="Education Fair Flyer"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+        </motion.div>
+
         {/* Profile Card */}
-        <section className="mb-24 px-4 sm:px-0">
-          <div className="flex flex-col md:flex-row md:items-start justify-between gap-12 text-center md:text-left">
+        <section className="mb-8 md:mb-16 px-4 sm:px-0">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 md:gap-12 text-center md:text-left">
             <div className="flex-1">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="inline-flex items-center gap-3 px-3 py-1 bg-primary/5 text-primary rounded-full text-[9px] font-black tracking-[0.2em] uppercase mb-8 shadow-inner border border-primary/5"
+                className="inline-flex items-center gap-3 px-3 py-1 bg-primary/5 text-primary rounded-full text-[9px] font-black tracking-[0.2em] uppercase mb-4 md:mb-8 shadow-inner border border-primary/5"
               >
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
                 Live Status
@@ -169,7 +183,7 @@ export default function StudentStatusPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-6xl md:text-8xl font-black tracking-tighter text-slate-900 mb-8 leading-[0.9]"
+                className="text-4xl md:text-8xl font-black tracking-tighter text-slate-900 mb-4 md:mb-8 leading-[0.9]"
               >
                 Hi, <span className="text-primary">{student.name.split(" ")[0]}</span>
               </motion.h1>
@@ -179,7 +193,7 @@ export default function StudentStatusPage() {
                 transition={{ delay: 0.2 }}
                 className="text-slate-400 font-bold text-lg leading-snug max-w-lg uppercase tracking-tight opacity-80"
               >
-                Check your turn and room assignments below.
+                Check your turn and desk assignments below.
               </motion.p>
             </div>
           </div>
@@ -187,77 +201,81 @@ export default function StudentStatusPage() {
 
         {/* Country Breakdown */}
         <section className="px-4 sm:px-0">
-          <div className="flex items-center justify-between mb-12">
+          <div className="flex items-center justify-between mb-6 md:mb-12">
             <h3 className="text-[11px] font-black text-slate-400 tracking-[0.3em] uppercase">Your Waiting List</h3>
           </div>
 
-          <div className="grid grid-cols-1 gap-12">
+          <div className="grid grid-cols-1 gap-8 md:gap-12">
             {leads.length > 0 ? (
               leads.map((lead) => (
                 <motion.div
                   key={lead.id}
                   layout
-                  className="bg-white p-10 md:p-14 rounded-[56px] border border-slate-50 shadow-[0_32px_128px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_48px_160px_rgba(0,0,0,0.08)] group overflow-hidden relative"
+                  className="bg-white p-6 md:p-14 rounded-3xl md:rounded-[56px] border border-slate-50 shadow-[0_32px_128px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_48px_160px_rgba(0,0,0,0.08)] group overflow-hidden relative"
                 >
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-12 relative z-10">
-                    <div className="flex items-center gap-8">
-                      <div className="w-20 h-20 bg-[#FBFBFD] rounded-[32px] flex items-center justify-center text-slate-900 font-black text-3xl border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-all duration-700 shadow-inner">
-                        {lead.country_name.charAt(0)}
-                      </div>
-                      <div>
-                        <h4 className="text-3xl font-black text-slate-900 tracking-tighter mb-2">{lead.country_name}</h4>
+                    <div className="flex flex-col gap-4 relative z-10">
+                      {/* Header Row: Country + Status */}
+                      <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <span className={cn(
-                            "text-[10px] font-black px-3 py-1 rounded-lg uppercase tracking-[0.15em] shadow-sm",
-                            lead.status === 'New' ? (lead.onlineCounselors > 0 ? "bg-slate-100 text-slate-500" : "bg-amber-50 text-amber-600 border border-amber-100") :
-                              lead.status === 'Warm' ? "bg-blue-50 text-blue-600 border border-blue-100" :
-                                lead.status === 'Hot' ? "bg-rose-50 text-rose-600 border border-rose-100" :
-                                  "bg-emerald-50 text-emerald-600 border border-emerald-100"
-                          )}>
-                            {lead.status === 'New' ? (lead.onlineCounselors > 0 ? `IN QUEUE` : "NOT AVAILABLE") :
-                              lead.status === 'Warm' ? "MEETING NOW" :
-                                lead.status === 'Hot' ? "PRIORITY TRACK" : "FINISHED"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {lead.status === 'New' && (
-                      <div className="flex items-center gap-12 border-l-2 border-slate-50 pl-12 h-16">
-                        <div className="text-center">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Queue ID</p>
-                          <p className="text-3xl font-black text-slate-900 tracking-tighter">#{lead.queuePosition}</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">About...</p>
-                          <div className={cn(
-                            "text-3xl font-black flex items-center justify-center gap-2 tracking-tighter",
-                            lead.onlineCounselors > 0 ? "text-primary" : "text-amber-500"
-                          )}>
-                            <Timer size={20} strokeWidth={3} className="text-slate-200" />
-                            {lead.onlineCounselors > 0 ? `${lead.waitTime}m` : "---"}
+                          <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 font-black text-sm border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
+                            {lead.country_name.charAt(0)}
                           </div>
+                          <h4 className="text-xl font-black text-slate-900 tracking-tight">{lead.country_name}</h4>
                         </div>
+                        <span className={cn(
+                          "text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider shadow-sm",
+                          lead.status === 'New' ? (lead.onlineCounselors > 0 ? "bg-slate-100 text-slate-500" : "bg-amber-50 text-amber-600 border border-amber-100") :
+                            lead.status === 'Warm' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" :
+                              lead.status === 'Hot' ? "bg-rose-50 text-rose-600 border border-rose-100" :
+                                "bg-slate-50 text-slate-400 border border-slate-100"
+                        )}>
+                          {lead.status === 'New' ? (lead.onlineCounselors > 0 ? `In Queue` : "Not Available") :
+                            lead.status === 'Warm' ? "Meeting Now" :
+                              lead.status === 'Hot' ? "Priority" : "Finished"}
+                        </span>
                       </div>
-                    )}
-
-                    {lead.status !== 'New' && lead.status !== 'Cold' && (
-                      <div className="px-8 py-4 bg-emerald-500 text-white rounded-[24px] flex items-center gap-4 shadow-2xl shadow-emerald-200 animate-bounce">
-                        <User size={20} strokeWidth={3} />
-                        <span className="text-xs font-black uppercase tracking-widest">Meeting in progress</span>
+ 
+                      {/* Metric/Instruction Row */}
+                      <div className="flex items-center justify-between pt-2">
+                        {lead.status === 'New' && (
+                          <div className="flex items-center gap-6">
+                            <div className="flex flex-col">
+                              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1.5">Queue ID</p>
+                              <p className="text-lg font-black text-slate-900 tracking-tighter leading-none">#{lead.queuePosition}</p>
+                            </div>
+                            <div className="flex flex-col border-l border-slate-100 pl-6">
+                              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1.5">About...</p>
+                              <div className={cn(
+                                "text-lg font-black flex items-center gap-1.5 tracking-tighter leading-none",
+                                lead.onlineCounselors > 0 ? "text-primary" : "text-amber-500"
+                              )}>
+                                {lead.onlineCounselors > 0 ? (
+                                  <>
+                                    <Timer size={14} strokeWidth={3} className="text-slate-200" />
+                                    {lead.waitTime}m
+                                  </>
+                                ) : "---"}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+ 
+                        {lead.status === 'Warm' && (
+                          <div className="flex items-center gap-2 text-emerald-600">
+                            <User size={14} strokeWidth={3} className="animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">At Desk Now</span>
+                          </div>
+                        )}
+ 
+                        {lead.status === 'New' && (
+                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight flex items-center gap-2">
+                             <span className="w-1.5 h-1.5 bg-slate-200 rounded-full" />
+                             Wait for your ID
+                          </p>
+                        )}
                       </div>
-                    )}
-                  </div>
-
-                  {lead.status === 'New' && (
-                    <div className="mt-12 pt-10 border-t-2 border-slate-50">
-                      <p className="text-xs text-slate-400 font-bold uppercase tracking-widest leading-relaxed flex items-center gap-3">
-                         <div className="w-1.5 h-1.5 bg-slate-200 rounded-full" />
-                         Proceed to the {lead.country_name} room when your ID is called.
-                      </p>
                     </div>
-                  )}
-                </motion.div>
+                  </motion.div>
               ))
             ) : (
               <div className="py-40 text-center bg-white rounded-[56px] border border-slate-50 shadow-inner">
@@ -270,7 +288,7 @@ export default function StudentStatusPage() {
         </section>
 
         {/* Global Record Security */}
-        <footer className="mt-40 pb-20 pt-16 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-10 opacity-30 px-4 sm:px-0">
+        <footer className="mt-16 md:mt-24 pb-20 pt-16 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-10 opacity-30 px-4 sm:px-0">
           <div className="flex items-center gap-4">
             <ShieldCheck size={20} className="text-slate-400" />
             <span className="text-[9px] font-black tracking-[0.4em] uppercase text-slate-600">Digital Entry Pass</span>

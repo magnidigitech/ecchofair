@@ -8,7 +8,7 @@ import {
   Edit3, X, Check, User, ChevronRight, Mic,
   QrCode, ArrowRight, ShieldCheck
 } from "lucide-react";
-import { cn, getSecurityCheck } from "@/lib/utils";
+import { cn, getSecurityCheck, generateWhatsAppLink } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Student, StudentCountry, Status } from "@/lib/mockDb";
 
@@ -396,8 +396,9 @@ function StudentDetailWorkspace({
   };
 
   // Secure Link Generation
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://fair.ecchouk.co.uk").replace(/\/$/, "");
   const secureHash = getSecurityCheck(student.generated_id);
-  const secureUrl = typeof window !== 'undefined' ? `${window.location.origin}/status/${student.generated_id}-${secureHash}` : '';
+  const secureUrl = `${baseUrl}/status/${student.generated_id}-${secureHash}`;
 
   // Voice-to-Text Logic
   const toggleSpeechRecognition = () => {
@@ -539,6 +540,23 @@ function StudentDetailWorkspace({
               <Printer className="w-5 h-5 sm:w-[18px] sm:h-[18px] mx-auto" strokeWidth={2.5} />
             </button>
           </div>
+
+          <a
+            href={generateWhatsAppLink({
+              name: student.name,
+              phone: student.phone,
+              course_interest: student.course_interest,
+              preferred_countries: student.preferred_countries,
+              intake: student.intake,
+              generated_id: student.generated_id,
+              passport_url: secureUrl
+            })}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto px-6 py-4 sm:py-3 bg-emerald-100/50 text-emerald-600 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-emerald-100 transition-all flex items-center justify-center gap-3 active:scale-95 shrink-0 border border-emerald-200/50"
+          >
+            <Phone className="w-4 h-4" strokeWidth={3} /> WhatsApp Share
+          </a>
 
           {lead.status !== 'Cold' && (
             <button
