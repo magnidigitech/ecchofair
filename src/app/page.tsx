@@ -633,6 +633,7 @@ export default function StudentForm() {
                         src={c.src}
                         alt={c.id}
                         fill
+                        sizes="48px"
                         className="object-contain p-2 group-hover:scale-110 transition-transform"
                       />
                     ) : (
@@ -665,6 +666,7 @@ export default function StudentForm() {
                     src={bank.src}
                     alt={bank.id}
                     fill
+                    sizes="(max-width: 768px) 128px, 160px"
                     className="object-contain"
                   />
                 </div>
