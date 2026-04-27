@@ -477,44 +477,47 @@ export default function StudentForm() {
                           <Controller
                             name="preferred_countries"
                             control={control}
-                            render={({ field }) => (
-                              <>
-                                {COUNTRIES.map(country => {
-                                  const isEurope = country === "Europe";
-                                  const selectedEUCount = field.value.filter((v: string) => EUROPE_COUNTRIES.includes(v)).length;
-                                  const isSelected = isEurope ? selectedEUCount > 0 : field.value.includes(country);
+                            render={({ field }) => {
+                              const value = field.value || [];
+                              return (
+                                <>
+                                  {COUNTRIES.map(country => {
+                                    const isEurope = country === "Europe";
+                                    const selectedEUCount = value.filter((v: string) => EUROPE_COUNTRIES.includes(v)).length;
+                                    const isSelected = isEurope ? selectedEUCount > 0 : value.includes(country);
 
-                                  return (
-                                    <div
-                                      key={country}
-                                      onClick={() => {
-                                        if (isEurope) {
-                                          setIsEuropeModalOpen(true);
-                                          return;
-                                        }
-                                        const newValue = isSelected
-                                          ? field.value.filter((v: string) => v !== country)
-                                          : [...field.value, country];
-                                        field.onChange(newValue);
-                                      }}
-                                      className={cn(
-                                        "cursor-pointer px-3 py-3 rounded-2xl border text-[10px] font-bold uppercase tracking-tight text-center transition-all flex items-center justify-center select-none shadow-sm gap-2",
-                                        isSelected
-                                          ? "bg-slate-900 border-slate-900 text-white shadow-lg"
-                                          : "bg-slate-50 border-slate-100 text-slate-400 hover:border-slate-300"
-                                      )}
-                                    >
-                                      {country}
-                                      {isEurope && selectedEUCount > 0 && (
-                                        <span className="bg-primary text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
-                                          {selectedEUCount}
-                                        </span>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                              </>
-                            )}
+                                    return (
+                                      <div
+                                        key={country}
+                                        onClick={() => {
+                                          if (isEurope) {
+                                            setIsEuropeModalOpen(true);
+                                            return;
+                                          }
+                                          const newValue = isSelected
+                                            ? value.filter((v: string) => v !== country)
+                                            : [...value, country];
+                                          field.onChange(newValue);
+                                        }}
+                                        className={cn(
+                                          "cursor-pointer px-3 py-3 rounded-2xl border text-[10px] font-bold uppercase tracking-tight text-center transition-all flex items-center justify-center select-none shadow-sm gap-2",
+                                          isSelected
+                                            ? "bg-slate-900 border-slate-900 text-white shadow-lg"
+                                            : "bg-slate-50 border-slate-100 text-slate-400 hover:border-slate-300"
+                                        )}
+                                      >
+                                        {country}
+                                        {isEurope && selectedEUCount > 0 && (
+                                          <span className="bg-primary text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+                                            {selectedEUCount}
+                                          </span>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </>
+                              );
+                            }}
                           />
                         </div>
                       </div>
@@ -639,65 +642,68 @@ export default function StudentForm() {
               <Controller
                 name="preferred_countries"
                 control={control}
-                render={({ field }) => (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                    className="bg-white/90 backdrop-blur-3xl p-6 sm:p-10 rounded-[32px] sm:rounded-[48px] shadow-[0_32px_128px_rgba(0,0,0,0.1)] max-w-2xl w-full border border-white/20 relative overflow-hidden"
-                  >
-                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary via-blue-400 to-indigo-500" />
+                render={({ field }) => {
+                  const value = field.value || [];
+                  return (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                      className="bg-white/90 backdrop-blur-3xl p-6 sm:p-10 rounded-[32px] sm:rounded-[48px] shadow-[0_32px_128px_rgba(0,0,0,0.1)] max-w-2xl w-full border border-white/20 relative overflow-hidden"
+                    >
+                      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary via-blue-400 to-indigo-500" />
 
-                    <div className="flex justify-between items-center mb-6 sm:mb-10">
-                      <div>
-                        <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tighter flex items-center gap-3">
-                          <Globe className="text-primary" size={24} /> Global Destinations
-                        </h3>
-                        <p className="text-slate-400 font-bold text-[10px] mt-2 uppercase tracking-[0.2em]">Select your preferred destinations</p>
+                      <div className="flex justify-between items-center mb-6 sm:mb-10">
+                        <div>
+                          <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tighter flex items-center gap-3">
+                            <Globe className="text-primary" size={24} /> Global Destinations
+                          </h3>
+                          <p className="text-slate-400 font-bold text-[10px] mt-2 uppercase tracking-[0.2em]">Select your preferred destinations</p>
+                        </div>
+                        <button onClick={() => setIsEuropeModalOpen(false)} className="bg-slate-50 p-3 rounded-2xl text-slate-400 hover:text-slate-900 transition-colors shadow-inner">
+                          <X size={20} strokeWidth={3} />
+                        </button>
                       </div>
-                      <button onClick={() => setIsEuropeModalOpen(false)} className="bg-slate-50 p-3 rounded-2xl text-slate-400 hover:text-slate-900 transition-colors shadow-inner">
-                        <X size={20} strokeWidth={3} />
-                      </button>
-                    </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto px-1 custom-scrollbar pb-6">
-                      {EUROPE_COUNTRIES.map(c => {
-                        const isSelected = field.value.includes(c);
-                        return (
-                          <div
-                            key={c}
-                            onClick={() => {
-                              const newValue = isSelected
-                                ? field.value.filter((v: string) => v !== c)
-                                : [...field.value, c];
-                              field.onChange(newValue);
-                            }}
-                            className={cn(
-                              "cursor-pointer px-4 py-3.5 rounded-2xl border text-[10px] font-black uppercase tracking-tight text-center transition-all flex items-center justify-center select-none shadow-sm",
-                              isSelected
-                                ? "bg-slate-900 border-slate-900 text-white shadow-lg"
-                                : "bg-white border-slate-100 text-slate-400 hover:border-slate-300"
-                            )}
-                          >
-                            {c}
-                          </div>
-                        );
-                      })}
-                    </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto px-1 custom-scrollbar pb-6">
+                        {EUROPE_COUNTRIES.map(c => {
+                          const isSelected = value.includes(c);
+                          return (
+                            <div
+                              key={c}
+                              onClick={() => {
+                                const newValue = isSelected
+                                  ? value.filter((v: string) => v !== c)
+                                  : [...value, c];
+                                field.onChange(newValue);
+                              }}
+                              className={cn(
+                                "cursor-pointer px-4 py-3.5 rounded-2xl border text-[10px] font-black uppercase tracking-tight text-center transition-all flex items-center justify-center select-none shadow-sm",
+                                isSelected
+                                  ? "bg-slate-900 border-slate-900 text-white shadow-lg"
+                                  : "bg-white border-slate-100 text-slate-400 hover:border-slate-300"
+                              )}
+                            >
+                              {c}
+                            </div>
+                          );
+                        })}
+                      </div>
 
-                    <div className="mt-10 pt-8 border-t border-slate-100 flex justify-between items-center">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-relaxed">
-                        {field.value.filter((v: string) => EUROPE_COUNTRIES.includes(v)).length} Selections Active
-                      </p>
-                      <button
-                        onClick={() => setIsEuropeModalOpen(false)}
-                        className="px-8 py-4 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-2xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95"
-                      >
-                        Confirm Choices
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
+                      <div className="mt-10 pt-8 border-t border-slate-100 flex justify-between items-center">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-relaxed">
+                          {value.filter((v: string) => EUROPE_COUNTRIES.includes(v)).length} Selections Active
+                        </p>
+                        <button
+                          onClick={() => setIsEuropeModalOpen(false)}
+                          className="px-8 py-4 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-2xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95"
+                        >
+                          Confirm Choices
+                        </button>
+                      </div>
+                    </motion.div>
+                  );
+                }}
               />
             </div>
           )}
